@@ -32,9 +32,13 @@
  *
  * OPENAI KEY RESOLUTION (BYOK):
  *   1. X-Api-Key request header       (end-user provides their own key)
- *   2. Source token's registered key  (station/org key stored server-side in KV)
+ *   2. Source token's registered key  (org key stored in KV token entry)
  *   3. env.DEFAULT_OPENAI_KEY secret  (deployment owner's fallback key)
- *   At least one tier must be configured. The component handles tier 1 automatically.
+ *
+ * ORG TOKEN MANAGEMENT:
+ *   POST   /admin/tokens   → create or update an org's source token + optional shared key
+ *   DELETE /admin/tokens   → revoke a token
+ *   Both require:  Authorization: Bearer <ADMIN_SECRET>
  *
  * RESPONSE (success):
  *   {
@@ -62,7 +66,7 @@
 import { ingestRaw } from './ingest.js';
 import { resolveSourceToken } from './token-registry.js';
 
-const ALLOWED_METHODS = ['GET', 'POST', 'OPTIONS'];
+const ALLOWED_METHODS = ['GET', 'POST', 'DELETE', 'OPTIONS'];
 
 export default {
   async fetch(request, env, ctx) {
@@ -82,6 +86,11 @@ export default {
 
     if (url.pathname === '/ingest/health') {
       return cors(json({ status: 'ok', ts: new Date().toISOString() }), env);
+    }
+
+    // ── Admin: token management (protected by ADMIN_SECRET)
+    if (url.pathname === '/admin/tokens') {
+      return cors(await handleAdminTokens(request, env), env);
     }
 
     return cors(json({ error: 'Not found' }, 404), env);
@@ -166,8 +175,113 @@ async function handleIngestRaw(request, env, ctx) {
 }
 
 // ─────────────────────────────────────────────
+// Admin — Token Management
+// POST   /admin/tokens   → create or update an org token
+// DELETE /admin/tokens   → revoke a token (by raw token value)
+//
+// Protected by ADMIN_SECRET wrangler secret.
+// Set it once:  npx wrangler secret put ADMIN_SECRET
+//
+// POST body:
+//   {
+//     "token":          "raw-token-string",   // the secret you'll hand to the org
+//     "name":           "CFBX Kamloops",
+//     "sourceAuthority":"verified_venue",      // corporate_admin | verified_venue | automated_scraper
+//     "trustScore":     80,
+//     "locationHint":   "Kamloops, BC, Canada",
+//     "targetGroups":   ["vista-radio-kamloops"],
+//     "openaiKey":      "sk-..."               // optional — org's shared key
+//   }
+//
+// DELETE body:
+//   { "token": "raw-token-string-to-revoke" }
+// ─────────────────────────────────────────────
+
+async function handleAdminTokens(request, env) {
+  // ── Auth
+  const adminSecret = env.ADMIN_SECRET;
+  if (!adminSecret) {
+    return json({ error: 'Admin API is not configured. Set the ADMIN_SECRET wrangler secret.' }, 503);
+  }
+  const authHeader = request.headers.get('Authorization') ?? '';
+  const provided = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
+  if (!provided || provided !== adminSecret) {
+    return json({ error: 'Unauthorized.' }, 401);
+  }
+
+  if (!env.SOURCE_TOKENS_KV) {
+    return json({ error: 'SOURCE_TOKENS_KV binding is not configured.' }, 503);
+  }
+
+  // ── Parse body
+  let body;
+  try { body = await request.json(); } catch {
+    return json({ error: 'Request body must be valid JSON.' }, 400);
+  }
+
+  const { token } = body;
+  if (!token || typeof token !== 'string' || token.length < 8) {
+    return json({ error: '`token` must be a string of at least 8 characters.' }, 400);
+  }
+
+  const tokenHash = await sha256Hex(token);
+
+  // ── DELETE — revoke
+  if (request.method === 'DELETE') {
+    await env.SOURCE_TOKENS_KV.delete(tokenHash);
+    return json({ ok: true, action: 'revoked', tokenHash: tokenHash.substring(0, 16) + '…' });
+  }
+
+  // ── POST — create or update
+  if (request.method !== 'POST') {
+    return json({ error: 'Use POST to create/update a token or DELETE to revoke.' }, 405);
+  }
+
+  const VALID_AUTHORITIES = ['corporate_admin', 'verified_venue', 'automated_scraper', 'public_submission'];
+  const sourceAuthority = body.sourceAuthority ?? 'verified_venue';
+  if (!VALID_AUTHORITIES.includes(sourceAuthority)) {
+    return json({ error: `sourceAuthority must be one of: ${VALID_AUTHORITIES.join(', ')}` }, 400);
+  }
+
+  const trustDefaults = { corporate_admin: 95, verified_venue: 80, automated_scraper: 45, public_submission: 10 };
+
+  const entry = {
+    tokenHash,
+    name:                body.name           ?? 'Unnamed Source',
+    sourceAuthority,
+    trustScore:          body.trustScore      ?? trustDefaults[sourceAuthority],
+    defaultTargetGroups: body.targetGroups    ?? [],
+    locationHint:        body.locationHint    ?? '',
+    active:              true,
+    createdAt:           new Date().toISOString(),
+  };
+
+  // Only store openaiKey if explicitly provided — never store undefined
+  if (body.openaiKey && body.openaiKey.startsWith('sk-')) {
+    entry.openaiKey = body.openaiKey;
+  }
+
+  await env.SOURCE_TOKENS_KV.put(tokenHash, JSON.stringify(entry));
+
+  return json({
+    ok: true,
+    action: 'upserted',
+    tokenHash: tokenHash.substring(0, 16) + '…',
+    name: entry.name,
+    sourceAuthority: entry.sourceAuthority,
+    trustScore: entry.trustScore,
+    hasOrgKey: !!entry.openaiKey,
+  }, 201);
+}
+
+// ─────────────────────────────────────────────
 // Utilities
 // ─────────────────────────────────────────────
+
+async function sha256Hex(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data, null, 2), {
