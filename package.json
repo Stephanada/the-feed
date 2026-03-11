@@ -11,7 +11,7 @@
     "validate": "node scripts/validate-events.js",
     "rebuild-index": "node scripts/rebuild-index.js",
     "aggregate": "node scripts/aggregator.js",
-    "build:ui": "mkdir -p dist/skins && cp ui/index.html dist/index.html && cp ui/the-feed-event.js dist/the-feed-event.js && cp ui/the-feed-ingest.js dist/the-feed-ingest.js && cp ui/skins/*.json dist/skins/ && cp ui/demo.html dist/demo.html",
+    "build:ui": "mkdir -p dist/skins && cp ui/index.html dist/index.html && cp ui/the-feed-event.js dist/the-feed-event.js && cp ui/the-feed-ingest.js dist/the-feed-ingest.js && cp ui/the-feed-calendar.js dist/the-feed-calendar.js && cp ui/skins/*.json dist/skins/ && cp ui/demo.html dist/demo.html",
     "dev:api": "wrangler dev --config workers/api/wrangler.toml",
     "dev:nlp": "wrangler dev --config workers/nlp/wrangler.toml",
     "dev:ingest": "wrangler dev --config workers/ingest/wrangler.toml",

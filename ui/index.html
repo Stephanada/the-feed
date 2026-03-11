@@ -695,13 +695,18 @@
       </div>
       <div class="pub-card">
         <span class="pub-card-icon">🎪</span>
-        <h3>Venues &amp; Promoters</h3>
-        <p>Embed the widget on your site. Anyone can submit shows directly from your event page. Submissions route through your token and your brand.</p>
+        <h3>Venues</h3>
+        <p>Embed the submission widget on your site. Anyone can submit shows directly from your event page — submissions route through your token and your brand.</p>
       </div>
       <div class="pub-card">
         <span class="pub-card-icon">🎤</span>
         <h3>Performers &amp; Managers</h3>
         <p>Submit your own shows directly. A verified token ties your submissions to your name — no middleman, no waiting for a venue to post it for you.</p>
+      </div>
+      <div class="pub-card">
+        <span class="pub-card-icon">📅</span>
+        <h3>Calendar Publishers</h3>
+        <p>Embed <code>&lt;the-feed-calendar&gt;</code> on any page for a fully skinnable event listing. Users toggle between mosaic, list, week, and month views — no backend required.</p>
       </div>
       <div class="pub-card">
         <span class="pub-card-icon">🔧</span>
@@ -712,10 +717,11 @@
 
     <div class="embed-box">
       <div class="embed-tabs">
-        <button class="embed-tab active" onclick="showTab('basic', this)">Basic embed</button>
+        <button class="embed-tab active" onclick="showTab('basic', this)">Submit widget</button>
+        <button class="embed-tab" onclick="showTab('calendar', this)">Calendar</button>
         <button class="embed-tab" onclick="showTab('verified', this)">Verified source</button>
         <button class="embed-tab" onclick="showTab('org', this)">Org shared key</button>
-        <button class="embed-tab" onclick="showTab('consume', this)">Consume the feed</button>
+        <button class="embed-tab" onclick="showTab('consume', this)">Raw feed</button>
       </div>
 
       <div id="tab-basic" class="embed-pane active">
@@ -731,6 +737,37 @@
 
 <span class="cmt">&lt;!-- Users enter their own OpenAI key in the widget. --&gt;</span></pre>
         <button class="copy-btn" onclick="copyCode('tab-basic')">Copy snippet</button>
+      </div>
+
+      <div id="tab-calendar" class="embed-pane">
+        <pre><span class="cmt">&lt;!-- Embeddable calendar — users toggle mosaic/list/week/month --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"module"</span>
+  <span class="attr">src</span>=<span class="str">"https://cdn.jsdelivr.net/gh/Stephanada/the-feed/ui/the-feed-calendar.js"</span>
+<span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="cmt">&lt;!-- Show all public events, all 4 views available --&gt;</span>
+<span class="tag">&lt;the-feed-calendar</span>
+  <span class="attr">skin</span>=<span class="str">"default"</span>
+  <span class="attr">view</span>=<span class="str">"mosaic"</span>
+<span class="tag">&gt;&lt;/the-feed-calendar&gt;</span>
+
+<span class="cmt">&lt;!-- Scope to a token (show only your events) --&gt;</span>
+<span class="tag">&lt;the-feed-calendar</span>
+  <span class="attr">token</span>=<span class="str">"your-source-token"</span>
+  <span class="attr">skin</span>=<span class="str">"broadcast"</span>
+  <span class="attr">view</span>=<span class="str">"list"</span>
+  <span class="attr">views</span>=<span class="str">"list,week,month"</span>
+<span class="tag">&gt;&lt;/the-feed-calendar&gt;</span>
+
+<span class="cmt">&lt;!-- Filter by venue, show only week + month toggle --&gt;</span>
+<span class="tag">&lt;the-feed-calendar</span>
+  <span class="attr">venue</span>=<span class="str">"The Fillmore"</span>
+  <span class="attr">skin</span>=<span class="str">"poster"</span>
+  <span class="attr">mode</span>=<span class="str">"dark"</span>
+  <span class="attr">view</span>=<span class="str">"month"</span>
+  <span class="attr">views</span>=<span class="str">"week,month"</span>
+<span class="tag">&gt;&lt;/the-feed-calendar&gt;</span></pre>
+        <button class="copy-btn" onclick="copyCode('tab-calendar')">Copy snippet</button>
       </div>
 
       <div id="tab-verified" class="embed-pane">
@@ -874,6 +911,7 @@ GET /api/feed.json?venue=The+Fillmore&amp;limit=20</span></pre>
 
 <!-- ══════════════════════════ JS ══════════════════════════════ -->
 <script type="module" src="./the-feed-ingest.js"></script>
+<script type="module" src="./the-feed-calendar.js"></script>
 <script>
   // ── Skin picker
   function setSkin(chip) {
