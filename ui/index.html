@@ -657,7 +657,7 @@
         <div class="section-body">
           <p>Paste a URL to any event listing — Bandsintown, Eventbrite, a venue website, a Facebook event — and watch it get extracted into a structured schema.org event in seconds.</p>
           <p>Or just describe a show in plain English. "Soccer Mommy at The Fillmore, Saturday April 18, doors 8pm, $30 advance."</p>
-          <p>Public submissions go to editorial review. <a href="#embed">Get a verified source token</a> for direct commits.</p>
+          <p>Public submissions go to editorial review. Provision a source token via the <a href="#embed">admin API</a> for direct commits.</p>
         </div>
         <div class="skins-grid" style="margin-top:2rem;">
           <div class="skin-chip active" data-skin="default" onclick="setSkin(this)">
@@ -691,7 +691,7 @@
       <div class="pub-card">
         <span class="pub-card-icon">📣</span>
         <h3>Promoters &amp; Labels</h3>
-        <p>A verified source token means your submissions commit directly — no review queue, full trust score. Your key is stored server-side so fans never see it.</p>
+        <p>Provision a source token via the admin API and your submissions commit directly — no review queue, full trust score. Register your OpenAI key server-side so it's never exposed to end users.</p>
       </div>
       <div class="pub-card">
         <span class="pub-card-icon">🎪</span>
@@ -845,11 +845,11 @@ GET /api/feed.json?venue=The+Fillmore&amp;limit=20</span></pre>
 <!-- ═══════════════════════════ CTA ══════════════════════════════ -->
 <div class="wrap">
   <div class="cta-strip">
-    <h2>Get on The Feed.</h2>
-    <p>Request a verified source token for your venue, org, or roster and go live in minutes — no code required.</p>
+    <h2>Self-serve. No gatekeepers.</h2>
+    <p>Provision your own source token via the admin API, embed the widget, and start submitting — no account, no approval, no waiting.</p>
     <div class="cta-actions">
-      <a href="mailto:hello@thefeed.site?subject=Source Token Request&body=Org name:%0AWebsite:" class="btn-primary">
-        Request a token →
+      <a href="#embed" class="btn-primary">
+        See the embed guide →
       </a>
       <a href="https://github.com/Stephanada/the-feed" target="_blank" rel="noopener" class="btn-ghost">
         View on GitHub
