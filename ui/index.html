@@ -397,6 +397,81 @@
     }
     .copy-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
 
+    /* ── Embed preview layout ─────────────────────────────── */
+    .embed-preview-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      min-height: 480px;
+    }
+    @media (max-width: 780px) {
+      .embed-preview-wrap { grid-template-columns: 1fr; }
+      .embed-preview-side { border-left: none !important; border-top: 1px solid var(--border); }
+    }
+    .embed-code-side {
+      display: flex;
+      flex-direction: column;
+    }
+    .embed-configurator {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 1rem 1.5rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .embed-configurator label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-mid);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .embed-configurator select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.8rem;
+      font-family: var(--font);
+      padding: 5px 8px;
+      cursor: pointer;
+      min-width: 110px;
+    }
+    .embed-configurator select:focus { outline: 1px solid var(--accent); }
+    .embed-code-side pre { flex: 1; }
+    .embed-preview-side {
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+    .embed-preview-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .embed-preview-label a {
+      font-size: 0.7rem;
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .embed-preview-iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+      min-height: 420px;
+      background: var(--bg);
+    }
+
     /* ── Skins showcase ───────────────────────────────────── */
     .skins-grid {
       display: grid;
@@ -742,9 +817,27 @@
       </div>
 
       <div id="tab-basic" class="embed-pane active">
-        <pre><span class="cmt">&lt;!-- 1. Load the component --&gt;</span>
+        <div class="embed-preview-wrap">
+          <div class="embed-code-side">
+            <div class="embed-configurator">
+              <label>Skin
+                <select id="ingest-skin" onchange="updateIngestPreview()">
+                  <option value="default">default</option>
+                  <option value="broadcast" selected>broadcast</option>
+                  <option value="poster">poster</option>
+                </select>
+              </label>
+              <label>Mode
+                <select id="ingest-mode" onchange="updateIngestPreview()">
+                  <option value="auto" selected>auto</option>
+                  <option value="dark">dark</option>
+                  <option value="light">light</option>
+                </select>
+              </label>
+            </div>
+            <pre id="ingest-code"><span class="cmt">&lt;!-- 1. Load the component --&gt;</span>
 <span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"module"</span>
-  <span class="attr">src</span>=<span class="str">"https://cdn.jsdelivr.net/gh/Stephanada/the-feed/ui/the-feed-ingest.js"</span>
+  <span class="attr">src</span>=<span class="str">"https://cdn.jsdelivr.net/gh/Stephanada/the-feed@main/ui/the-feed-ingest.js"</span>
 <span class="tag">&gt;&lt;/script&gt;</span>
 
 <span class="cmt">&lt;!-- 2. Drop the element --&gt;</span>
@@ -753,38 +846,77 @@
 <span class="tag">&gt;&lt;/the-feed-ingest&gt;</span>
 
 <span class="cmt">&lt;!-- Users enter their own OpenAI key in the widget. --&gt;</span></pre>
-        <button class="copy-btn" onclick="copyCode('tab-basic')">Copy snippet</button>
+            <button class="copy-btn" onclick="copyCode('tab-basic')">Copy snippet</button>
+          </div>
+          <div class="embed-preview-side">
+            <div class="embed-preview-label">
+              <span>Live preview</span>
+              <a id="ingest-preview-link" href="#" target="_blank" rel="noopener">Open ↗</a>
+            </div>
+            <iframe id="ingest-preview-iframe" class="embed-preview-iframe"
+              src="./embed.html?mode=ingest&skin=broadcast&colormode=auto"
+              title="Submit widget preview"
+              loading="lazy"></iframe>
+          </div>
+        </div>
       </div>
 
       <div id="tab-calendar" class="embed-pane">
-        <pre><span class="cmt">&lt;!-- Embeddable calendar — users toggle mosaic/list/week/month --&gt;</span>
-<span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"module"</span>
-  <span class="attr">src</span>=<span class="str">"https://cdn.jsdelivr.net/gh/Stephanada/the-feed/ui/the-feed-calendar.js"</span>
+        <div class="embed-preview-wrap">
+          <div class="embed-code-side">
+            <div class="embed-configurator">
+              <label>Skin
+                <select id="cal-skin" onchange="updateCalPreview()">
+                  <option value="default" selected>default</option>
+                  <option value="broadcast">broadcast</option>
+                  <option value="poster">poster</option>
+                </select>
+              </label>
+              <label>View
+                <select id="cal-view" onchange="updateCalPreview()">
+                  <option value="mosaic" selected>mosaic</option>
+                  <option value="list">list</option>
+                  <option value="week">week</option>
+                  <option value="month">month</option>
+                </select>
+              </label>
+              <label>Mode
+                <select id="cal-mode" onchange="updateCalPreview()">
+                  <option value="auto" selected>auto</option>
+                  <option value="dark">dark</option>
+                  <option value="light">light</option>
+                </select>
+              </label>
+              <label>Views shown
+                <select id="cal-views" onchange="updateCalPreview()">
+                  <option value="" selected>all 4</option>
+                  <option value="list,week,month">list+week+month</option>
+                  <option value="week,month">week+month</option>
+                  <option value="mosaic,list">mosaic+list</option>
+                </select>
+              </label>
+            </div>
+            <pre id="cal-code"><span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"module"</span>
+  <span class="attr">src</span>=<span class="str">"https://cdn.jsdelivr.net/gh/Stephanada/the-feed@main/ui/the-feed-calendar.js"</span>
 <span class="tag">&gt;&lt;/script&gt;</span>
 
-<span class="cmt">&lt;!-- Show all public events, all 4 views available --&gt;</span>
 <span class="tag">&lt;the-feed-calendar</span>
   <span class="attr">skin</span>=<span class="str">"default"</span>
   <span class="attr">view</span>=<span class="str">"mosaic"</span>
-<span class="tag">&gt;&lt;/the-feed-calendar&gt;</span>
-
-<span class="cmt">&lt;!-- Scope to a token (show only your events) --&gt;</span>
-<span class="tag">&lt;the-feed-calendar</span>
-  <span class="attr">token</span>=<span class="str">"your-source-token"</span>
-  <span class="attr">skin</span>=<span class="str">"broadcast"</span>
-  <span class="attr">view</span>=<span class="str">"list"</span>
-  <span class="attr">views</span>=<span class="str">"list,week,month"</span>
-<span class="tag">&gt;&lt;/the-feed-calendar&gt;</span>
-
-<span class="cmt">&lt;!-- Filter by venue, show only week + month toggle --&gt;</span>
-<span class="tag">&lt;the-feed-calendar</span>
-  <span class="attr">venue</span>=<span class="str">"The Fillmore"</span>
-  <span class="attr">skin</span>=<span class="str">"poster"</span>
-  <span class="attr">mode</span>=<span class="str">"dark"</span>
-  <span class="attr">view</span>=<span class="str">"month"</span>
-  <span class="attr">views</span>=<span class="str">"week,month"</span>
 <span class="tag">&gt;&lt;/the-feed-calendar&gt;</span></pre>
-        <button class="copy-btn" onclick="copyCode('tab-calendar')">Copy snippet</button>
+            <button class="copy-btn" onclick="copyCode('tab-calendar')">Copy snippet</button>
+          </div>
+          <div class="embed-preview-side">
+            <div class="embed-preview-label">
+              <span>Live preview</span>
+              <a id="cal-preview-link" href="#" target="_blank" rel="noopener">Open ↗</a>
+            </div>
+            <iframe id="cal-preview-iframe" class="embed-preview-iframe"
+              src="./embed.html?mode=calendar&skin=default&view=mosaic&colormode=auto"
+              title="Calendar preview"
+              loading="lazy"></iframe>
+          </div>
+        </div>
       </div>
 
       <div id="tab-nocode" class="embed-pane">
@@ -988,6 +1120,50 @@ GET /api/feed.json?venue=The+Fillmore&amp;limit=20</span></pre>
     chip.classList.add('active');
     const el = document.querySelector('the-feed-ingest');
     if (el) el.setAttribute('skin', chip.dataset.skin);
+  }
+
+  // ── Ingest live preview
+  function updateIngestPreview() {
+    const skin = document.getElementById('ingest-skin').value;
+    const mode = document.getElementById('ingest-mode').value;
+    const src  = `./embed.html?mode=ingest&skin=${skin}&colormode=${mode}`;
+    document.getElementById('ingest-preview-iframe').src = src;
+    document.getElementById('ingest-preview-link').href  = src;
+    // Update code snippet
+    document.getElementById('ingest-code').innerHTML =
+      `<span class="cmt">&lt;!-- 1. Load the component --&gt;</span>\n` +
+      `<span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"module"</span>\n` +
+      `  <span class="attr">src</span>=<span class="str">"https://cdn.jsdelivr.net/gh/Stephanada/the-feed@main/ui/the-feed-ingest.js"</span>\n` +
+      `<span class="tag">&gt;&lt;/script&gt;</span>\n\n` +
+      `<span class="cmt">&lt;!-- 2. Drop the element --&gt;</span>\n` +
+      `<span class="tag">&lt;the-feed-ingest</span>\n` +
+      `  <span class="attr">skin</span>=<span class="str">"${skin}"</span>` +
+      (mode !== 'auto' ? `\n  <span class="attr">mode</span>=<span class="str">"${mode}"</span>` : '') +
+      `\n<span class="tag">&gt;&lt;/the-feed-ingest&gt;</span>`;
+  }
+
+  // ── Calendar live preview
+  function updateCalPreview() {
+    const skin  = document.getElementById('cal-skin').value;
+    const view  = document.getElementById('cal-view').value;
+    const mode  = document.getElementById('cal-mode').value;
+    const views = document.getElementById('cal-views').value;
+    let src = `./embed.html?mode=calendar&skin=${skin}&view=${view}&colormode=${mode}`;
+    if (views) src += `&views=${encodeURIComponent(views)}`;
+    document.getElementById('cal-preview-iframe').src = src;
+    document.getElementById('cal-preview-link').href  = src;
+    // Update code snippet
+    let code =
+      `<span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"module"</span>\n` +
+      `  <span class="attr">src</span>=<span class="str">"https://cdn.jsdelivr.net/gh/Stephanada/the-feed@main/ui/the-feed-calendar.js"</span>\n` +
+      `<span class="tag">&gt;&lt;/script&gt;</span>\n\n` +
+      `<span class="tag">&lt;the-feed-calendar</span>\n` +
+      `  <span class="attr">skin</span>=<span class="str">"${skin}"</span>\n` +
+      `  <span class="attr">view</span>=<span class="str">"${view}"</span>`;
+    if (views) code += `\n  <span class="attr">views</span>=<span class="str">"${views}"</span>`;
+    if (mode !== 'auto') code += `\n  <span class="attr">mode</span>=<span class="str">"${mode}"</span>`;
+    code += `\n<span class="tag">&gt;&lt;/the-feed-calendar&gt;</span>`;
+    document.getElementById('cal-code').innerHTML = code;
   }
 
   // ── Code tabs
