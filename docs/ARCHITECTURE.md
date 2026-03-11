@@ -6,116 +6,118 @@
 
 2. **Edge-First** — All reads are served at sub-50ms from Cloudflare's edge network. No origin server for read traffic.
 
-3. **Serverless Write Path** — Writes go through Cloudflare Workers → GitHub API → Pull Request. The PR is both the submission receipt and the moderation queue.
+3. **Serverless Write Path** — Writes go through `<the-feed-ingest>` → Cloudflare Workers → GitHub API → production or staging. The trust score determines which path.
 
-4. **BYOK NLP** — The NLP parsing capability requires no platform API key. Clients bring their own OpenAI key. The platform never stores or proxies keys without explicit configuration.
+4. **BYOK NLP** — The NLP parsing capability requires no platform API key. Callers bring their own OpenAI key, or use a shared `DEFAULT_OPENAI_KEY` provisioned per verified source token.
 
-5. **Framework-Agnostic UI** — The Web Component works via a single `<script type="module">` tag. No framework dependency. Shadow DOM ensures CSS isolation from the host CMS.
+5. **Framework-Agnostic UI** — All three Web Components work via a single `<script type="module">` tag. No framework. Shadow DOM ensures CSS isolation from the host CMS. jsDelivr serves them directly from this public GitHub repo.
 
 ---
 
 ## Data Flow Diagrams
 
-### Public Event Submission
+### Natural Language Ingest (the Eventizer)
+
+```
+Submitter (any site, any device)
+   │
+   ▼
+<the-feed-ingest> Web Component
+   │  POST /ingest/raw
+   │  Headers: Authorization: Bearer <token>, X-Api-Key: sk-...
+   │  Body: { text, location_hint }
+   ▼
+the-feed-ingest Worker (Cloudflare Edge)
+   │
+   ├── Resolve source token → trust score
+   │       KV lookup → SHA-256 hash match
+   │       Falls back to STATIC_REGISTRY
+   │
+   ├── POST /nlp/parse → the-feed-nlp Worker
+   │       gpt-4o-mini (json_object, temp 0.1)
+   │       Brand safety evaluation
+   │       → schema.org/Event JSON-LD
+   │
+   ├── Validate + stamp
+   │       SHA-256(performer | date | venue) → evt_[hex]
+   │
+   └── Route by trust score
+           ≥ 90 → commitToLedger('production')
+           ≥ 70 → commitToLedger('staging')
+           < 70 → createPR(staging branch)
+```
+
+### Public Event Submission (structured)
 
 ```
 Submitter
    │
    ▼
-POST /api/events/submit
-   │
-   ▼
-Edge API Worker
-   │  Validate structure
+POST /api/events/submit  (the-feed-api Worker)
+   │  Validate JSON-LD structure
    │  Generate evt_ ID
-   │  Rate limit check
    │
    ▼
-GitHub API
-   │  Create branch: submission/evt_[id]
-   │  Commit: ledger/events/staging/[id].json
+GitHub API → PR to staging branch
    │
    ▼
-Pull Request → staging branch
+Human editor reviews + merges
    │
    ▼
-Human Editor reviews PR
-   │
-   ├─── Merge → staging → production (via another PR)
-   └─── Close → rejected (with comment)
-```
-
-### Automated Scraper Flow
-
-```
-GitHub Actions Cron (every 6h)
-   │
-   ▼
-aggregator.js
-   │  Load scraper-sources.json
-   │  Resolve BYOK key per source
-   │
-   ▼
-Fetch source URL / RSS
-   │
-   ▼
-POST /nlp/parse (NLP Worker)
-   │  gpt-4o-mini (json_object mode)
-   │  Brand safety evaluation
-   │  Event extraction → JSON-LD
-   │
-   ├─── Rejected? → Log, skip
-   └─── Accepted?
-           │
-           ▼
-       GitHub API
-           │  Create branch
-           │  Commit event file
-           │
-           ▼
-       Pull Request → staging
-           │
-           ▼
-       validate-and-merge.yml
-           │  Schema validation
-           │  ID integrity check
-           │
-           ▼
-       Human Editor merge
+validate-and-merge.yml CI
+   │  Schema validation
+   │  ID integrity check
+   │  Rebuild index.json
 ```
 
 ### Read / Syndication Flow
 
 ```
-Client (Browser, CMS, Feed Reader)
+Client (Browser, CMS, Feed Reader, iframe)
    │
    ▼
 Cloudflare Edge Network (300+ PoPs)
    │
    ▼
-Edge API Worker (the-feed-api.workers.dev)
+the-feed-api Worker
    │
    ├── GET /api/events?group=vista-radio-kamloops
-   │       │  Fetch production/index.json (cached 5min)
-   │       │  Fetch individual event files (cached 5min)
-   │       │  Apply filters: scope, group, city, region, genre
-   │       └─ Return JSON-LD ItemList
+   │       Fetch production/index.json (GitHub raw, cached)
+   │       Fetch individual evt_*.json files
+   │       Apply filters: scope, group, city, region, genre, venue, performer
+   │       Return JSON-LD ItemList
    │
-   ├── GET /api/feed.ics
-   │       └─ Same data → iCalendar format
+   ├── GET /api/feed.ics   → iCalendar
+   ├── GET /api/feed.rss   → RSS 2.0
+   ├── GET /api/feed.xml   → Atom/XML
+   └── GET /api/events/:id → single event
+```
+
+### iframe / No-code Embed Flow
+
+```
+No-code builder (Weebly, Wix, Squarespace, Showit)
+   │  HTML block / Embed widget
    │
-   ├── GET /api/feed.rss
-   │       └─ Same data → RSS 2.0 format
+   ▼
+<iframe src="https://the-feed-ui.pages.dev/embed.html?mode=calendar&skin=default">
    │
-   └── GET /api/feed.xml
-           └─ Same data → XML format
+   ▼
+embed.html (Cloudflare Pages)
+   │  Parses URL params
+   │  Loads <the-feed-calendar> or <the-feed-ingest> from same origin
+   │
+   ▼
+<the-feed-calendar> Web Component
+   │  GET /api/events
+   │
+   ▼
+the-feed-api Worker → ledger → rendered calendar
 ```
 
 ---
 
 ## Hub & Spoke Topology
-
-The Feed uses a centralized ledger with federated delivery:
 
 ```
                     ┌─────────────────┐
@@ -126,7 +128,7 @@ The Feed uses a centralized ledger with federated delivery:
                              │
                     ┌────────▼────────┐
                     │   EDGE API HUB  │
-                    │ (CF Worker)     │
+                    │  (CF Worker)    │
                     │  rules.json     │
                     └────────┬────────┘
                              │
@@ -140,30 +142,30 @@ The Feed uses a centralized ledger with federated delivery:
    └─────────────┘   └──────────────┘   └─────────────┘
 ```
 
-Each spoke receives only the events relevant to its configured `targetGroup` and geographic `scope`. The hub applies routing rules from `config/rules.json` dynamically at the edge — no per-site deployments needed.
+Each spoke receives only events for its `targetGroup` and geographic `scope`. Routing rules live in `config/rules.json` — no per-site deploys.
 
 ---
 
 ## Security Model
 
 | Layer | Mechanism |
-|-------|-----------|
-| Public submissions | Staging branch → human editorial approval required |
-| Source authority | Trust hierarchy enforced during conflict resolution |
-| NLP API keys | BYOK — client supplies key in `X-Api-Key` header, never stored |
+|---|---|
+| Public submissions | Staging branch → human editorial approval |
+| Ingest trust | Token trust score (0–100) determines production vs staging vs PR |
+| NLP API keys | BYOK — client supplies key in `X-Api-Key`, never stored unless `DEFAULT_OPENAI_KEY` set per token |
 | Brand safety | Every NLP parse evaluates content safety before extraction |
-| Rate limiting | Cloudflare Worker rate limits on public submission endpoint |
-| CORS | Configurable `ALLOWED_ORIGINS` env var on workers |
-| GitHub writes | Scoped PAT with only `contents:write` and `pull_requests:write` |
+| CORS | `ALLOWED_ORIGINS = "*"` — open public protocol |
+| GitHub writes | Scoped PAT with only `contents:write` + `pull_requests:write` |
+| Admin endpoints | `ADMIN_SECRET` bearer token required for `/admin/tokens` |
 
 ---
 
 ## Conflict Resolution
 
-When the same event (same deterministic ID) is submitted by multiple sources, the `sourceAuthorityWeights` from `rules.json` determine which record wins:
+When the same event ID is submitted by multiple sources, `sourceAuthorityWeights` in `rules.json` determine which record wins:
 
 | Source | Weight |
-|--------|--------|
+|---|---|
 | `corporate_admin` | 100 |
 | `verified_venue` | 75 |
 | `automated_scraper` | 40 |
@@ -171,18 +173,5 @@ When the same event (same deterministic ID) is submitted by multiple sources, th
 
 Higher weight overwrites lower weight. Equal weight triggers a human review flag.
 
+
 ---
-
-## Deployment Checklist
-
-- [ ] Create GitHub ledger repository
-- [ ] Copy workflow files to `.github/workflows/`
-- [ ] Set GitHub Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `NLP_WORKER_URL`, `OPENAI_KEY_DEFAULT`
-- [ ] Set Wrangler secret: `GITHUB_TOKEN` (via `wrangler secret put`)
-- [ ] Update `config/rules.json` with your network hubs
-- [ ] Update `scripts/scraper-sources.json` with your event sources
-- [ ] Deploy API Worker: `npm run deploy:api`
-- [ ] Deploy NLP Worker: `npm run deploy:nlp`
-- [ ] Deploy Pages: `npm run deploy:pages`
-- [ ] Install WordPress plugin on network
-- [ ] Configure network settings: API URL, NLP URL, OpenAI key, default group

@@ -1,31 +1,94 @@
-# 🎵 The Feed — Open Event Protocol
+# The Feed — Open Event Protocol
 
-> **Headless, decentralized, real-time event syndication for Canadian community media.**
+> **Submit a show once. Syndicate everywhere.**
 
-The Feed is a GitOps-architected event data protocol serving as the canonical, real-time data source for local community culture. It aggregates and distributes event data across the Vista Radio network and MadeAndPlayedInCanada.com.
+The Feed is a headless, open event syndication protocol for performers, promoters, and venues. No platform lock-in. One structured submission, distributed across every site that subscribes to the feed.
+
+**Live:** [the-feed-ui.pages.dev](https://the-feed-ui.pages.dev) · [the-feed-api.stephan-99b.workers.dev](https://the-feed-api.stephan-99b.workers.dev/api/health)  
+**Repo:** Public — MIT License  
+**Status:** Production (March 2026)
 
 ---
 
 ## Architecture at a Glance
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│                     THE FEED ECOSYSTEM                        │
-├──────────────┬──────────────┬──────────────┬─────────────────┤
-│  LEDGER      │  EDGE API    │  NLP PARSER  │  WEB COMPONENT  │
-│  (GitHub)    │  (CF Worker) │  (CF Worker) │  (Shadow DOM)   │
-│              │              │              │                 │
-│  .json files │  /api/events │  /nlp/parse  │  <the-feed-     │
-│  JSON-LD     │  /api/feed   │  BYOK Header │   event>        │
-│  schema.org  │  .ics .rss   │  gpt-4o-mini │  CSS Custom     │
-│  SHA-256 IDs │  .xml        │  Brand Safe  │  Properties     │
-├──────────────┴──────────────┴──────────────┴─────────────────┤
-│                   GITHUB ACTIONS CI/CD                        │
-│   validate-and-merge.yml  │  scraper-cron.yml  │  deploy.yml  │
-├──────────────────────────────────────────────────────────────┤
-│                   WORDPRESS ADAPTER                           │
-│   Network Settings  │  Shortcode Builder  │  NLP Quick Parse │
-└──────────────────────────────────────────────────────────────┘
+                        ┌──────────────────────────┐
+  Raw text / voice ───▶ │  <the-feed-ingest>        │  Web Component
+                        │  POST /ingest/raw          │  ui/the-feed-ingest.js
+                        └─────────────┬────────────┘
+                                      │ Bearer token + text
+                                      ▼
+                        ┌──────────────────────────┐
+                        │  the-feed-ingest (Worker) │  Cloudflare Edge
+                        │  Eventizer (gpt-4o-mini)  │  workers/ingest/
+                        │  Token trust scoring      │
+                        └─────────────┬────────────┘
+                                      │
+                         ┌────────────┴──────────────┐
+                         │ Trust-score routing        │
+                    ≥90  │       ≥70         <70      │
+                         ▼        ▼            ▼
+                      direct   staging      PR to
+                       prod    commit       staging
+                         └────────────────────────────┘
+                                      │
+                        ┌─────────────▼────────────┐
+                        │  GitHub Ledger (this repo)│  GitOps source of truth
+                        │  ledger/events/           │
+                        │  production/  staging/    │
+                        └─────────────┬────────────┘
+                                      │
+                        ┌─────────────▼────────────┐
+                        │  the-feed-api (Worker)    │  Cloudflare Edge
+                        │  REST · ICS · RSS · XML   │  workers/api/
+                        └─────────────┬────────────┘
+                                      │
+              ┌───────────────────────┼──────────────────────┐
+              ▼                       ▼                       ▼
+  <the-feed-calendar>       WordPress Plugin          iframe embed shim
+   Web Component             [the_feed] shortcode      ui/embed.html
+   ui/the-feed-calendar.js   wordpress-plugin/         (Weebly, Wix, etc.)
+```
+
+---
+
+## Quick Start — Embed the Calendar
+
+```html
+<!-- Load the component (self-contained, no build step) -->
+<script type="module"
+  src="https://cdn.jsdelivr.net/gh/Stephanada/the-feed@main/ui/the-feed-calendar.js">
+</script>
+
+<!-- Drop the element -->
+<the-feed-calendar skin="default" view="mosaic"></the-feed-calendar>
+```
+
+## Quick Start — Submit Widget
+
+```html
+<script type="module"
+  src="https://cdn.jsdelivr.net/gh/Stephanada/the-feed@main/ui/the-feed-ingest.js">
+</script>
+
+<the-feed-ingest skin="broadcast"></the-feed-ingest>
+```
+
+## No-code / iframe Embed
+
+Works on Weebly, Squarespace, Wix, Showit — any builder that accepts HTML blocks.
+
+```html
+<!-- Submit widget -->
+<iframe src="https://the-feed-ui.pages.dev/embed.html?mode=ingest&skin=broadcast"
+  width="100%" height="420" style="border:none;border-radius:12px;" loading="lazy">
+</iframe>
+
+<!-- Event calendar -->
+<iframe src="https://the-feed-ui.pages.dev/embed.html?mode=calendar&skin=default&view=mosaic"
+  width="100%" height="600" style="border:none;border-radius:12px;" loading="lazy">
+</iframe>
 ```
 
 ---
@@ -38,43 +101,52 @@ the-feed/
 │   ├── schema.js                    # Zod schema + ID generation
 │   ├── event.example.json           # Canonical data example
 │   └── events/
-│       ├── production/              # Live events (served by CDN)
-│       │   └── index.json           # Auto-rebuilt on merge
+│       ├── production/              # Live events (index.json + evt_*.json)
 │       └── staging/                 # PRs pending editorial review
 │
 ├── workers/
-│   ├── api/                         # Edge API (Cloudflare Worker)
-│   │   ├── index.js                 # Router, filters, syndication
+│   ├── api/                         # Edge API — REST, ICS, RSS, XML
+│   │   ├── index.js
 │   │   └── wrangler.toml
-│   └── nlp/                         # NLP Parser (Cloudflare Worker)
-│       ├── index.js                 # gpt-4o-mini, BYOK, moderation
+│   ├── nlp/                         # NLP Parser — gpt-4o-mini, BYOK
+│   │   ├── index.js
+│   │   └── wrangler.toml
+│   └── ingest/                      # Ingest gateway — Eventizer pipeline
+│       ├── index.js
+│       ├── ingest.js
+│       ├── token-registry.js
 │       └── wrangler.toml
 │
 ├── ui/
-│   ├── the-feed-event.js            # <the-feed-event> Web Component
-│   └── demo.html                    # Component demo page
+│   ├── the-feed-event.js            # <the-feed-event> display component
+│   ├── the-feed-ingest.js           # <the-feed-ingest> submission component
+│   ├── the-feed-calendar.js         # <the-feed-calendar> calendar component
+│   ├── embed.html                   # Hosted iframe shim for no-code builders
+│   ├── index.html                   # Public landing page (thefeed.site)
+│   ├── feed-icon.svg                # Logomark / favicon
+│   └── demo.html                    # Component demo
 │
 ├── config/
 │   └── rules.json                   # Hub & Spoke routing rules
 │
 ├── github-actions/
 │   └── .github/workflows/
-│       ├── validate-and-merge.yml   # Schema validation CI
-│       ├── scraper-cron.yml         # Automated aggregator
-│       └── deploy.yml               # Cloudflare deployment
+│       ├── validate-and-merge.yml
+│       ├── scraper-cron.yml
+│       └── deploy.yml
 │
 ├── scripts/
-│   ├── validate-events.js           # CI validation script
-│   ├── rebuild-index.js             # Ledger index rebuilder
-│   ├── aggregator.js                # Scheduled scraper
-│   └── scraper-sources.json         # Source configuration
+│   ├── validate-events.js
+│   ├── rebuild-index.js
+│   ├── aggregator.js
+│   └── scraper-sources.json
 │
 ├── wordpress-plugin/
-│   ├── the-feed.php                 # Main plugin file
+│   ├── the-feed.php
 │   └── admin/
-│       ├── network-settings.php     # Network admin UI
-│       ├── shortcode-builder.php    # Visual shortcode builder
-│       └── nlp-tool.php             # NLP quick-parse tool
+│       ├── network-settings.php
+│       ├── shortcode-builder.php
+│       └── nlp-tool.php
 │
 └── docs/
     ├── ARCHITECTURE.md
@@ -84,160 +156,146 @@ the-feed/
 
 ---
 
-## Quick Start
+## API Reference
 
-### 1. Set up the Ledger Repository
+**Base URL:** `https://the-feed-api.stephan-99b.workers.dev`  
+**CORS:** Open (`*`) — works from any origin.
 
-```bash
-# Create a new GitHub repo for the ledger
-gh repo create the-feed-ledger --private
-git push origin main
+### GET `/api/events`
 
-# Set GitHub Secrets
-gh secret set CLOUDFLARE_API_TOKEN
-gh secret set CLOUDFLARE_ACCOUNT_ID
-gh secret set NLP_WORKER_URL
-gh secret set OPENAI_KEY_DEFAULT
+| Parameter | Type | Description |
+|---|---|---|
+| `group` | string | Hub target group (`vista-radio-bc`) |
+| `scope` | string | `local` \| `regional` \| `national` |
+| `city` | string | City name (case-insensitive) |
+| `region` | string | Province code (`BC`, `AB`, etc.) |
+| `genre` | string | Genre filter |
+| `venue` | string | Venue name filter |
+| `performer` | string | Performer name filter |
+| `limit` | number | Max results (default 100) |
+| `offset` | number | Pagination offset |
+| `after` | ISO date | Events starting after this date |
+| `before` | ISO date | Events starting before this date |
+
+### GET `/api/events/:id` — Single event
+### GET `/api/feed.ics` — iCalendar
+### GET `/api/feed.rss` — RSS 2.0
+### GET `/api/feed.xml` — Atom/XML
+### GET `/api/rules` — Hub routing rules
+### GET `/api/health` — Health check
+### POST `/api/events/submit` — Public structured submission (opens staging PR)
+
+---
+
+## Ingest API
+
+**Base URL:** `https://the-feed-ingest.stephan-99b.workers.dev`
+
+### POST `/ingest/raw`
+
+```json
+{
+  "text": "The Trews are playing the Commodore this Friday at 8pm. Tix $35.",
+  "location_hint": "Vancouver, BC"
+}
 ```
 
-### 2. Deploy the Workers
-
-```bash
-npm install
-
-# Set worker secrets
-cd workers/api
-wrangler secret put GITHUB_TOKEN
-
-# Deploy
-npm run deploy:api
-npm run deploy:nlp
-npm run deploy:pages
+**Headers:**
+```
+Authorization: Bearer <source-token>   (optional — raises trust level)
+X-Api-Key: sk-...                      (OpenAI key — or use a token with DEFAULT_OPENAI_KEY)
 ```
 
-### 3. Install the WordPress Plugin
-
-Upload the `wordpress-plugin/` directory to `wp-content/plugins/the-feed/` on your WordPress network. Activate network-wide and configure via **Network Admin → The Feed**.
-
-### 4. Embed Events on Any Page
-
-**Shortcode (WordPress):**
-```
-[the_feed group="vista-radio-kamloops" mode="list" limit="10"]
-[the_feed_event token="evt_abc123"]
-```
-
-**Direct HTML (any CMS):**
-```html
-<script type="module" src="https://thefeed.pages.dev/ui/the-feed-event.js"></script>
-<the-feed-event mode="list" group="vista-radio-kamloops" limit="10"
-  api="https://the-feed-api.workers.dev"></the-feed-event>
+**Response:**
+```json
+{
+  "status": "committed" | "staged" | "pending_review" | "rejected",
+  "id": "evt_abc123...",
+  "message": "Human-readable status"
+}
 ```
 
 ---
 
-## API Reference
+## Web Components
 
-### GET `/api/events`
+All three components are self-contained ES modules. No build step, no framework, Shadow DOM CSS isolation.
 
-| Parameter | Type   | Description                            |
-|-----------|--------|----------------------------------------|
-| `group`   | string | Hub target group (`vista-radio-bc`)    |
-| `scope`   | string | `local` \| `regional` \| `national`   |
-| `city`    | string | City name (case-insensitive)           |
-| `region`  | string | Province code (`BC`, `AB`, etc.)       |
-| `genre`   | string | Genre filter                           |
-| `limit`   | number | Max results (default 100, max 500)     |
-| `offset`  | number | Pagination offset                      |
-| `after`   | ISO    | Events starting after this date        |
-| `before`  | ISO    | Events starting before this date       |
-| `past`    | bool   | Include past events (`true`/`false`)   |
+| Component | File | Description |
+|---|---|---|
+| `<the-feed-ingest>` | `ui/the-feed-ingest.js` | Natural language event submission |
+| `<the-feed-calendar>` | `ui/the-feed-calendar.js` | Event calendar (mosaic/list/week/month views) |
+| `<the-feed-event>` | `ui/the-feed-event.js` | Single event display card |
 
-### GET `/api/feed.ics` — iCalendar
-### GET `/api/feed.rss` — RSS 2.0
-### GET `/api/feed.xml` — XML
-All accept the same filter parameters as `/api/events`.
-
-### POST `/api/events/submit`
-Submit a new event for editorial review. Creates a PR to the staging branch.
-
-### POST `/nlp/parse`
-```json
-{
-  "text": "The Trews live at the Commodore, April 15 at 8pm. Tickets $35 at Ticketweb.",
-  "context": "Vancouver, BC, Canada"
-}
+**CDN (via jsDelivr):**
 ```
-Requires `X-Api-Key: sk-...` header (BYOK).
-
-### POST `/nlp/parse-url`
-```json
-{ "url": "https://venue.com/events/show-name" }
+https://cdn.jsdelivr.net/gh/Stephanada/the-feed@main/ui/the-feed-ingest.js
+https://cdn.jsdelivr.net/gh/Stephanada/the-feed@main/ui/the-feed-calendar.js
+https://cdn.jsdelivr.net/gh/Stephanada/the-feed@main/ui/the-feed-event.js
 ```
 
 ---
 
 ## Data Standard
 
-Every event is a JSON-LD document conforming to `schema.org/Event`.
+All events are `schema.org/Event` JSON-LD with a deterministic `evt_` ID:
 
-**Deterministic ID:**
 ```
-SHA-256(lowercase(performer + "|" + date + "|" + venue))
+SHA-256( lowercase( performer_name | YYYY-MM-DD | venue_name ) )
 → evt_[64-char hex]
 ```
 
-**Required fields:** `name`, `startDate`, `location.name`, `location.address.addressLocality`, `location.address.addressCountry`
+Same show submitted from 10 sources = 1 record, not 10 duplicates.
 
-See [`docs/DATA_STANDARD.md`](docs/DATA_STANDARD.md) for the full specification.
+See [`docs/DATA_STANDARD.md`](docs/DATA_STANDARD.md) for the full schema.
+
+---
+
+## Identity & Trust
+
+Source tokens set how much an ingest submission is trusted.
+
+| Type | Trust Score | Routes to |
+|---|---|---|
+| `corporate_admin` | 95 | Direct → production |
+| `verified_venue` | 80 | Direct → staging |
+| `automated_scraper` | 45 | PR → staging |
+| Public (no token) | 10 | PR → staging |
+
+---
+
+## WordPress
+
+Install `wordpress-plugin/` at `wp-content/plugins/the-feed/`. Activate network-wide.
+
+```
+[the_feed group="vista-radio-kamloops" limit="10"]
+[the_feed_event token="evt_abc123"]
+[the_feed_ingest skin="broadcast"]
+```
 
 ---
 
 ## Network Hubs
 
-| Hub ID | Site | Scope |
-|--------|------|-------|
-| `vista-radio-kamloops` | kamloopsnow.com | Local |
-| `vista-radio-kelowna` | kelownanow.com | Local |
-| `vista-radio-prince-george` | princegeorgenow.com | Local |
-| `vista-radio-bc` | vistaradio.ca | Regional |
-| `vista-radio-national` | vistaradio.ca | National |
-| `madeincanada` | madeandplayedincanada.com | National |
+| Hub ID | Scope |
+|---|---|
+| `vista-radio-kamloops` | Local |
+| `vista-radio-kelowna` | Local |
+| `vista-radio-bc` | Regional |
+| `vista-radio-national` | National |
+| `madeincanada` | National |
 
-Edit `config/rules.json` to add new hubs.
-
----
-
-## Theming the Web Component
-
-```css
-the-feed-event {
-  --primary-color: #c8102e;
-  --accent-color: #c8102e;
-  --font-family: 'Roboto', sans-serif;
-  --card-radius: 8px;
-  --card-shadow: 0 4px 20px rgba(0,0,0,0.12);
-}
-```
-
-| Property | Default | Description |
-|----------|---------|-------------|
-| `--primary-color` | `#1a1a2e` | Brand primary colour |
-| `--accent-color` | `#e94560` | CTA buttons, badges |
-| `--font-family` | System font | Typography |
-| `--card-radius` | `10px` | Card corner radius |
-| `--card-shadow` | Subtle shadow | Card elevation |
-| `--card-bg` | `#ffffff` | Card background |
-| `--ticket-btn-bg` | `var(--accent-color)` | Ticket button colour |
+Configure in `config/rules.json`.
 
 ---
 
 ## Contributing
 
-See [`CONTRIBUTING.md`](docs/CONTRIBUTING.md).
+See [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md).
 
 ---
 
 ## License
 
-MIT © The Feed
+MIT
