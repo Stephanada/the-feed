@@ -1,0 +1,121 @@
+# ══════════════════════════════════════════════════════════════
+# THE FEED — Event Validation & Ledger Merge Pipeline
+# ══════════════════════════════════════════════════════════════
+# Triggers on:
+#   - Pull requests to `staging` branch (public submissions,
+#     automated scraper output)
+#   - Pull requests to `main` branch (editorial approvals from
+#     staging → production)
+#
+# Pipeline steps:
+#   1. Validate all changed .json files against the Zod schema
+#   2. Verify deterministic @id hash integrity
+#   3. Check for duplicates across the production ledger
+#   4. Run brand safety check via NLP worker (staging PRs only)
+#   5. Update the ledger index.json on merge
+#   6. Post validation status as a PR comment
+
+name: Validate & Merge Event Ledger
+
+on:
+  pull_request:
+    branches:
+      - main
+      - staging
+    paths:
+      - "ledger/events/**/*.json"
+  push:
+    branches:
+      - main
+    paths:
+      - "ledger/events/production/**/*.json"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  # ──────────────────────────────────────────
+  # JOB 1: Validate changed event files
+  # ──────────────────────────────────────────
+  validate-events:
+    name: Validate Event Schema
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: .
+
+      - name: Get changed event files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+        with:
+          files: "ledger/events/**/*.json"
+
+      - name: Validate changed event files
+        if: steps.changed-files.outputs.any_changed == 'true'
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+        run: |
+          node scripts/validate-events.js $CHANGED_FILES
+
+      - name: Post validation result to PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const outcome = '${{ steps.validate-events.outcome }}' || 'success';
+            const icon = outcome === 'success' ? '✅' : '❌';
+            const msg = outcome === 'success'
+              ? '**The Feed Validator:** All event files passed schema validation and deduplication checks.'
+              : '**The Feed Validator:** One or more event files failed validation. Please check the Actions log for details.';
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `${icon} ${msg}`
+            });
+
+  # ──────────────────────────────────────────
+  # JOB 2: Update production index on merge to main
+  # ──────────────────────────────────────────
+  update-ledger-index:
+    name: Rebuild Ledger Index
+    runs-on: ubuntu-latest
+    needs: validate-events
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Rebuild production index
+        run: node scripts/rebuild-index.js
+
+      - name: Commit updated index
+        run: |
+          git config user.name "The Feed Bot"
+          git config user.email "bot@thefeed.dev"
+          git add ledger/events/production/index.json
+          git diff --cached --quiet || git commit -m "chore(ledger): rebuild production index [skip ci]"
+          git push

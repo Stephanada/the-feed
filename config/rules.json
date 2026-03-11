@@ -1,0 +1,135 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2026-03-10T00:00:00Z",
+
+  "hubs": [
+    {
+      "id": "vista-radio-kamloops",
+      "name": "Vista Radio — Kamloops, BC",
+      "domain": "kamloopsnow.com",
+      "feedEndpoint": "https://thefeed.pages.dev/api/events",
+      "scope": "local",
+      "geo": {
+        "city": "Kamloops",
+        "region": "BC",
+        "country": "CA",
+        "lat": 50.6745,
+        "lng": -120.3273,
+        "radiusKm": 100
+      },
+      "targetGroup": "vista-radio-kamloops",
+      "active": true
+    },
+    {
+      "id": "vista-radio-kelowna",
+      "name": "Vista Radio — Kelowna, BC",
+      "domain": "kelownanow.com",
+      "feedEndpoint": "https://thefeed.pages.dev/api/events",
+      "scope": "local",
+      "geo": {
+        "city": "Kelowna",
+        "region": "BC",
+        "country": "CA",
+        "lat": 49.8880,
+        "lng": -119.4960,
+        "radiusKm": 80
+      },
+      "targetGroup": "vista-radio-kelowna",
+      "active": true
+    },
+    {
+      "id": "vista-radio-prince-george",
+      "name": "Vista Radio — Prince George, BC",
+      "domain": "princegeorgenow.com",
+      "feedEndpoint": "https://thefeed.pages.dev/api/events",
+      "scope": "local",
+      "geo": {
+        "city": "Prince George",
+        "region": "BC",
+        "country": "CA",
+        "lat": 53.9171,
+        "lng": -122.7497,
+        "radiusKm": 150
+      },
+      "targetGroup": "vista-radio-prince-george",
+      "active": true
+    },
+    {
+      "id": "vista-radio-bc",
+      "name": "Vista Radio — British Columbia (Regional)",
+      "domain": "vistaradio.ca",
+      "feedEndpoint": "https://thefeed.pages.dev/api/events",
+      "scope": "regional",
+      "geo": {
+        "region": "BC",
+        "country": "CA"
+      },
+      "targetGroup": "vista-radio-bc",
+      "active": true
+    },
+    {
+      "id": "vista-radio-national",
+      "name": "Vista Radio — National",
+      "domain": "vistaradio.ca",
+      "feedEndpoint": "https://thefeed.pages.dev/api/events",
+      "scope": "national",
+      "geo": {
+        "country": "CA"
+      },
+      "targetGroup": "vista-radio-national",
+      "active": true
+    },
+    {
+      "id": "madeincanada",
+      "name": "Made & Played in Canada",
+      "domain": "madeandplayedincanada.com",
+      "feedEndpoint": "https://thefeed.pages.dev/api/events",
+      "scope": "national",
+      "geo": {
+        "country": "CA"
+      },
+      "targetGroup": "madeincanada",
+      "active": true,
+      "filters": {
+        "requireCanadianArtist": true
+      }
+    }
+  ],
+
+  "scopes": {
+    "local": {
+      "description": "Events within a single city or metro area",
+      "maxRadiusKm": 150
+    },
+    "regional": {
+      "description": "Events within a province or multi-city region",
+      "maxRadiusKm": 800
+    },
+    "national": {
+      "description": "Events of national interest, distributed to all hubs",
+      "maxRadiusKm": null
+    }
+  },
+
+  "sourceAuthorityWeights": {
+    "corporate_admin": 100,
+    "verified_venue": 75,
+    "automated_scraper": 40,
+    "public_submission": 10
+  },
+
+  "contentModeration": {
+    "autoRejectOnBrandSafeFail": true,
+    "requireHumanApprovalForSources": ["public_submission", "automated_scraper"],
+    "autoApproveForSources": ["corporate_admin", "verified_venue"]
+  },
+
+  "syndicationFormats": ["json", "ics", "rss", "xml"],
+
+  "defaultCacheTtlSeconds": 300,
+
+  "rateLimiting": {
+    "publicSubmissionsPerIpPerHour": 10,
+    "nlpParseRequestsPerKeyPerHour": 100
+  }
+}

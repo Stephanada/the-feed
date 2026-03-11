@@ -1,0 +1,26 @@
+name = "the-feed-ingest"
+main = "index.js"
+compatibility_date = "2026-03-01"
+
+# KV namespace for source token registry
+# Create with: wrangler kv:namespace create SOURCE_TOKENS_KV
+# kv_namespaces = [
+#   { binding = "SOURCE_TOKENS_KV", id = "YOUR_KV_NAMESPACE_ID" }
+# ]
+
+[vars]
+GITHUB_OWNER = "your-github-org"
+GITHUB_REPO = "the-feed-ledger"
+GITHUB_PRODUCTION_BRANCH = "main"
+GITHUB_STAGING_BRANCH = "staging"
+ALLOWED_ORIGINS = "https://vistaradio.ca,https://madeandplayedincanada.com,http://localhost:3000"
+
+# Secrets (set via: wrangler secret put <NAME>)
+# GITHUB_TOKEN
+# DEFAULT_OPENAI_KEY   ← used when verified tokens submit without BYOK header
+
+[env.production]
+name = "the-feed-ingest-production"
+
+[env.staging]
+name = "the-feed-ingest-staging"

@@ -1,0 +1,12 @@
+name = "the-feed-nlp"
+main = "index.js"
+compatibility_date = "2026-03-01"
+
+[vars]
+ALLOWED_ORIGINS = "https://vistaradio.ca,https://madeandplayedincanada.com,http://localhost:3000"
+
+[env.production]
+name = "the-feed-nlp-production"
+
+[env.staging]
+name = "the-feed-nlp-staging"

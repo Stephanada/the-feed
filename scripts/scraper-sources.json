@@ -1,0 +1,38 @@
+[
+  {
+    "id": "vista-radio-kamloops",
+    "name": "Vista Radio — Kamloops Events",
+    "type": "url",
+    "url": "https://kamloopsnow.com/events",
+    "targetGroup": "vista-radio-kamloops",
+    "locationContext": "Kamloops, BC, Canada",
+    "active": true
+  },
+  {
+    "id": "vista-radio-kelowna",
+    "name": "Vista Radio — Kelowna Events",
+    "type": "url",
+    "url": "https://kelownanow.com/events",
+    "targetGroup": "vista-radio-kelowna",
+    "locationContext": "Kelowna, BC, Canada",
+    "active": true
+  },
+  {
+    "id": "madeincanada",
+    "name": "Made & Played in Canada — Events",
+    "type": "url",
+    "url": "https://madeandplayedincanada.com/events",
+    "targetGroup": "madeincanada",
+    "locationContext": "Canada",
+    "active": true
+  },
+  {
+    "id": "commodore-ballroom",
+    "name": "Commodore Ballroom — Vancouver",
+    "type": "url",
+    "url": "https://commodoreballroom.com/shows",
+    "targetGroup": "vista-radio-bc",
+    "locationContext": "Vancouver, BC, Canada",
+    "active": true
+  }
+]

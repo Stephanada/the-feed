@@ -1,0 +1,90 @@
+# ══════════════════════════════════════════════════════════════
+# THE FEED — Deploy to Cloudflare Pages + Workers
+# ══════════════════════════════════════════════════════════════
+# Deploys on push to `main` (production) or `staging` (preview).
+# Workers are deployed via Wrangler CLI.
+
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "staging"
+        type: choice
+        options:
+          - staging
+          - production
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  deploy:
+    name: Deploy to Cloudflare
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy API Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: workers/api
+          command: deploy --env ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+
+      - name: Deploy NLP Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: workers/nlp
+          command: deploy --env ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+
+      - name: Deploy Ingest Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: workers/ingest
+          command: deploy --env ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+
+      - name: Build UI Component
+        run: npm run build:ui
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy ./dist --project-name=the-feed --branch=${{ github.ref_name }}
+
+      - name: Deployment summary
+        run: |
+          echo "### ✅ The Feed Deployed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** \`${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Workers deployed:** API · NLP · Ingest" >> $GITHUB_STEP_SUMMARY

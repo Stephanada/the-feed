@@ -1,0 +1,27 @@
+name = "the-feed-api"
+main = "index.js"
+compatibility_date = "2026-03-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Bind a KV namespace for rate limiting counters
+# kv_namespaces = [
+#   { binding = "RATE_LIMITS", id = "YOUR_KV_NAMESPACE_ID" }
+# ]
+
+[vars]
+GITHUB_OWNER = "your-github-org"
+GITHUB_REPO = "the-feed-ledger"
+GITHUB_PRODUCTION_BRANCH = "main"
+GITHUB_STAGING_BRANCH = "staging"
+FEED_CDN_BASE = "https://raw.githubusercontent.com"
+ALLOWED_ORIGINS = "https://vistaradio.ca,https://madeandplayedincanada.com,http://localhost:3000"
+
+# Secrets set via: wrangler secret put GITHUB_TOKEN
+# [secrets]
+# GITHUB_TOKEN
+
+[env.production]
+name = "the-feed-api-production"
+
+[env.staging]
+name = "the-feed-api-staging"

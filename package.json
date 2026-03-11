@@ -1,0 +1,35 @@
+{
+  "name": "the-feed",
+  "version": "1.0.0",
+  "description": "The Feed — Open Event Protocol. Headless, decentralized event syndication for the Vista Radio & MadeInCanada network.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "validate": "node scripts/validate-events.js",
+    "rebuild-index": "node scripts/rebuild-index.js",
+    "aggregate": "node scripts/aggregator.js",
+    "build:ui": "cp ui/the-feed-event.js dist/ui/the-feed-event.js && cp ui/the-feed-ingest.js dist/ui/the-feed-ingest.js && cp ui/demo.html dist/index.html",
+    "dev:api": "wrangler dev --config workers/api/wrangler.toml",
+    "dev:nlp": "wrangler dev --config workers/nlp/wrangler.toml",
+    "dev:ingest": "wrangler dev --config workers/ingest/wrangler.toml",
+    "deploy:api": "wrangler deploy --config workers/api/wrangler.toml",
+    "deploy:nlp": "wrangler deploy --config workers/nlp/wrangler.toml",
+    "deploy:ingest": "wrangler deploy --config workers/ingest/wrangler.toml",
+    "deploy:pages": "wrangler pages deploy ./dist --project-name=the-feed",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  },
+  "workspaces": [
+    "workers/api",
+    "workers/nlp",
+    "workers/ingest"
+  ]
+}

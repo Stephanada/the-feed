@@ -1,0 +1,85 @@
+# ══════════════════════════════════════════════════════════════
+# THE FEED — Automated Event Scraper / Aggregator Cron
+# ══════════════════════════════════════════════════════════════
+# Runs on a schedule to poll known event sources, pass raw text
+# through the NLP Parser worker, and submit structured events
+# to the staging branch via Pull Request.
+#
+# SCHEDULE: Every 6 hours
+# BYOK: Each source's API key is stored as a GitHub Secret
+#
+# ADDING A NEW SOURCE:
+#   1. Add source config to scripts/scraper-sources.json
+#   2. Add the operator's OpenAI key as a GitHub Secret named
+#      OPENAI_KEY_<SOURCE_ID_UPPERCASE>
+#   3. The scraper will automatically pick it up next run
+
+name: Automated Event Aggregator
+
+on:
+  schedule:
+    # Every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      source_id:
+        description: "Specific source ID to scrape (leave blank for all)"
+        required: false
+        default: ""
+      dry_run:
+        description: "Dry run (parse only, do not submit PRs)"
+        required: false
+        default: "false"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  aggregate:
+    name: Aggregate Events from Sources
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run aggregator
+        env:
+          # GitHub token for creating PRs
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_OWNER: ${{ github.repository_owner }}
+          GITHUB_REPO: ${{ github.event.repository.name }}
+
+          # NLP Worker endpoint
+          NLP_WORKER_URL: ${{ secrets.NLP_WORKER_URL }}
+
+          # OpenAI keys per source (BYOK)
+          # Each network operator provides their own key.
+          # Add additional secrets as: OPENAI_KEY_<SOURCE_ID>
+          OPENAI_KEY_VISTA_RADIO: ${{ secrets.OPENAI_KEY_VISTA_RADIO }}
+          OPENAI_KEY_MADEINCANADA: ${{ secrets.OPENAI_KEY_MADEINCANADA }}
+          OPENAI_KEY_DEFAULT: ${{ secrets.OPENAI_KEY_DEFAULT }}
+
+          # Run config
+          SOURCE_ID: ${{ github.event.inputs.source_id }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+
+        run: node scripts/aggregator.js
+
+      - name: Upload aggregator report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aggregator-report-${{ github.run_id }}
+          path: .aggregator-report.json
+          retention-days: 30
