@@ -1,0 +1,64 @@
+{
+  "id": "broadcast",
+  "name": "Broadcast",
+  "author": "The Feed",
+  "version": "1.0.0",
+  "description": "Dark, technical, radio station dashboard energy. Built for newsrooms and station intranets.",
+  "style_id": "the-feed/broadcast",
+  "modes": {
+    "light": {
+      "colors": {
+        "accent":         "#00b4d8",
+        "accent_text":    "#ffffff",
+        "background":     "#f0f4f8",
+        "surface":        "#e2eaf2",
+        "border":         "#c8d6e5",
+        "text_primary":   "#0d1b2a",
+        "text_secondary": "#3a5068",
+        "text_muted":     "#7a90a4",
+        "success":        "#06b6d4",
+        "warning":        "#f59e0b",
+        "danger":         "#ef4444"
+      },
+      "typography": {
+        "font_family":        "'IBM Plex Mono', 'Courier New', monospace",
+        "font_size_base":     "14px",
+        "font_weight_normal": "400",
+        "font_weight_bold":   "600"
+      },
+      "shape": {
+        "radius_input": "4px",
+        "radius_btn":   "3px",
+        "radius_card":  "4px",
+        "shadow_card":  "0 1px 4px rgba(0,0,0,0.12)"
+      }
+    },
+    "dark": {
+      "colors": {
+        "accent":         "#00b4d8",
+        "accent_text":    "#000000",
+        "background":     "#0d1117",
+        "surface":        "#161b22",
+        "border":         "rgba(0,180,216,0.18)",
+        "text_primary":   "#cdd9e5",
+        "text_secondary": "#8b949e",
+        "text_muted":     "#484f58",
+        "success":        "#39d353",
+        "warning":        "#f0883e",
+        "danger":         "#f85149"
+      },
+      "typography": {
+        "font_family":        "'IBM Plex Mono', 'Courier New', monospace",
+        "font_size_base":     "14px",
+        "font_weight_normal": "400",
+        "font_weight_bold":   "600"
+      },
+      "shape": {
+        "radius_input": "4px",
+        "radius_btn":   "3px",
+        "radius_card":  "4px",
+        "shadow_card":  "0 0 0 1px rgba(0,180,216,0.15), 0 4px 16px rgba(0,0,0,0.4)"
+      }
+    }
+  }
+}

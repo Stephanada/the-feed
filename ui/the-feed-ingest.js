@@ -1,304 +1,363 @@
 /**
- * THE FEED — <the-feed-ingest> Web Component
+ * THE FEED — <the-feed-ingest> Web Component  v2.0
  * ══════════════════════════════════════════════════════════════
  * "The Death of the Form"
  *
- * A single, frictionless event submission interface.
- * One text field. One button. Optional voice input.
- * No login. No account. No form fields.
+ * Natural language + URL event submission. No forms. No login.
+ * Fully skinnable — 3 built-in presets, remote skin JSON support,
+ * CSS custom property overrides, per-skin light/dark modes.
  *
- * USAGE:
+ * ── USAGE ────────────────────────────────────────────────────
+ *
  *   <the-feed-ingest
  *     api="https://the-feed-ingest.workers.dev"
  *     token="your-source-token"
  *     location-hint="Kamloops, BC"
- *     placeholder="Tell me about the show..."
+ *     skin="broadcast"
+ *     mode="dark"
  *   ></the-feed-ingest>
  *
- * ATTRIBUTES:
+ * ── ATTRIBUTES ───────────────────────────────────────────────
+ *
  *   api            Ingest worker base URL
  *   token          Source bearer token (optional — sets trust level)
- *   location-hint  City/region context for relative date resolution
- *   placeholder    Textarea placeholder text
- *   theme          "light" (default) | "dark"
- *   api-key        OpenAI API key (BYOK) — can also be set at runtime
+ *   api-key        OpenAI key (sk-...) — BYOK
+ *   location-hint  City/region for relative date resolution
+ *   placeholder    Textarea placeholder override
+ *   skin           "default" | "broadcast" | "poster" | https://...skin.json
+ *   mode           "light" | "dark" | "auto" (follows OS preference)
  *
- * EVENTS EMITTED:
- *   the-feed:submitted   → CustomEvent with { detail: { status, event, id, message } }
- *   the-feed:error       → CustomEvent with { detail: { error } }
+ * ── SKIN CSS CUSTOM PROPERTIES (inline overrides) ────────────
  *
- * THEMING (CSS Custom Properties):
- *   --primary-color, --accent-color, --font-family,
- *   --input-radius, --btn-radius, --card-bg
+ *   --tfi-accent          Primary action colour
+ *   --tfi-accent-text     Text on accent background
+ *   --tfi-background      Card/container background
+ *   --tfi-surface         Input/field background
+ *   --tfi-border          Input border colour
+ *   --tfi-text-primary    Main text
+ *   --tfi-text-secondary  Secondary text
+ *   --tfi-text-muted      Placeholder / meta text
+ *   --tfi-font-family     Font stack
+ *   --tfi-font-size       Base font size
+ *   --tfi-radius-input    Input border radius
+ *   --tfi-radius-btn      Button border radius
+ *   --tfi-radius-card     Card border radius
+ *   --tfi-shadow-card     Card box shadow
+ *
+ * ── EVENTS ───────────────────────────────────────────────────
+ *
+ *   the-feed:submitted   { detail: { status, event, id, message } }
+ *   the-feed:error       { detail: { error } }
  */
 
-const DEFAULT_INGEST_API = 'https://the-feed-ingest.workers.dev';
+// ─────────────────────────────────────────────
+// Built-in skin definitions
+// ─────────────────────────────────────────────
 
-const INGEST_STYLES = /* css */`
+const SKINS = {
+  default: {
+    id: 'default', name: 'Default',
+    modes: {
+      light: {
+        colors: { accent:'#e94560', accent_text:'#ffffff', background:'#ffffff', surface:'#f9f9fb', border:'#e2e2e8', text_primary:'#111111', text_secondary:'#555555', text_muted:'#999999', success:'#22c55e', warning:'#f59e0b', danger:'#ef4444' },
+        typography: { font_family:"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", font_size_base:'15px', font_weight_bold:'700' },
+        shape: { radius_input:'10px', radius_btn:'8px', radius_card:'12px', shadow_card:'0 2px 16px rgba(0,0,0,0.07)' },
+      },
+      dark: {
+        colors: { accent:'#e94560', accent_text:'#ffffff', background:'#1e1e2e', surface:'#2a2a3e', border:'rgba(255,255,255,0.10)', text_primary:'#f0f0f0', text_secondary:'#aaaaaa', text_muted:'#666666', success:'#22c55e', warning:'#f59e0b', danger:'#ef4444' },
+        typography: { font_family:"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", font_size_base:'15px', font_weight_bold:'700' },
+        shape: { radius_input:'10px', radius_btn:'8px', radius_card:'12px', shadow_card:'0 2px 16px rgba(0,0,0,0.3)' },
+      },
+    },
+  },
+  broadcast: {
+    id: 'broadcast', name: 'Broadcast',
+    modes: {
+      light: {
+        colors: { accent:'#00b4d8', accent_text:'#000000', background:'#f0f4f8', surface:'#e2eaf2', border:'#c8d6e5', text_primary:'#0d1b2a', text_secondary:'#3a5068', text_muted:'#7a90a4', success:'#06b6d4', warning:'#f59e0b', danger:'#ef4444' },
+        typography: { font_family:"'IBM Plex Mono', 'Courier New', monospace", font_size_base:'14px', font_weight_bold:'600' },
+        shape: { radius_input:'4px', radius_btn:'3px', radius_card:'4px', shadow_card:'0 1px 4px rgba(0,0,0,0.12)' },
+      },
+      dark: {
+        colors: { accent:'#00b4d8', accent_text:'#000000', background:'#0d1117', surface:'#161b22', border:'rgba(0,180,216,0.18)', text_primary:'#cdd9e5', text_secondary:'#8b949e', text_muted:'#484f58', success:'#39d353', warning:'#f0883e', danger:'#f85149' },
+        typography: { font_family:"'IBM Plex Mono', 'Courier New', monospace", font_size_base:'14px', font_weight_bold:'600' },
+        shape: { radius_input:'4px', radius_btn:'3px', radius_card:'4px', shadow_card:'0 0 0 1px rgba(0,180,216,0.15), 0 4px 16px rgba(0,0,0,0.4)' },
+      },
+    },
+  },
+  poster: {
+    id: 'poster', name: 'Poster',
+    modes: {
+      light: {
+        colors: { accent:'#ff3c00', accent_text:'#ffffff', background:'#fffdf7', surface:'#fff8ec', border:'#f0d9b5', text_primary:'#1a0a00', text_secondary:'#4a2e1a', text_muted:'#a07850', success:'#2d9a4e', warning:'#e8a317', danger:'#cc1100' },
+        typography: { font_family:"'Anton', 'Impact', 'Arial Black', sans-serif", font_size_base:'15px', font_weight_bold:'700' },
+        shape: { radius_input:'2px', radius_btn:'2px', radius_card:'2px', shadow_card:'4px 4px 0px #1a0a00' },
+      },
+      dark: {
+        colors: { accent:'#ff3c00', accent_text:'#ffffff', background:'#0f0800', surface:'#1a1000', border:'rgba(255,60,0,0.25)', text_primary:'#fff8ec', text_secondary:'#d4a870', text_muted:'#7a5535', success:'#39d353', warning:'#f0883e', danger:'#ff3c00' },
+        typography: { font_family:"'Anton', 'Impact', 'Arial Black', sans-serif", font_size_base:'15px', font_weight_bold:'700' },
+        shape: { radius_input:'2px', radius_btn:'2px', radius_card:'2px', shadow_card:'4px 4px 0px rgba(255,60,0,0.5)' },
+      },
+    },
+  },
+};
+
+const DEFAULT_INGEST_API = 'https://the-feed-ingest.stephan-99b.workers.dev';
+
+// ─────────────────────────────────────────────
+// Skin → CSS custom properties
+// ─────────────────────────────────────────────
+
+function skinToVars(skinDef, resolvedMode) {
+  const m = skinDef.modes?.[resolvedMode] ?? skinDef.modes?.light ?? {};
+  const c = m.colors ?? {};
+  const t = m.typography ?? {};
+  const s = m.shape ?? {};
+  return `
+    --tfi-accent:          ${c.accent         ?? '#e94560'};
+    --tfi-accent-text:     ${c.accent_text     ?? '#ffffff'};
+    --tfi-background:      ${c.background      ?? '#ffffff'};
+    --tfi-surface:         ${c.surface         ?? '#f9f9fb'};
+    --tfi-border:          ${c.border          ?? '#e2e2e8'};
+    --tfi-text-primary:    ${c.text_primary     ?? '#111111'};
+    --tfi-text-secondary:  ${c.text_secondary   ?? '#555555'};
+    --tfi-text-muted:      ${c.text_muted       ?? '#999999'};
+    --tfi-success:         ${c.success          ?? '#22c55e'};
+    --tfi-warning:         ${c.warning          ?? '#f59e0b'};
+    --tfi-danger:          ${c.danger           ?? '#ef4444'};
+    --tfi-font-family:     ${t.font_family      ?? 'sans-serif'};
+    --tfi-font-size:       ${t.font_size_base   ?? '15px'};
+    --tfi-font-bold:       ${t.font_weight_bold ?? '700'};
+    --tfi-radius-input:    ${s.radius_input     ?? '8px'};
+    --tfi-radius-btn:      ${s.radius_btn       ?? '8px'};
+    --tfi-radius-card:     ${s.radius_card      ?? '12px'};
+    --tfi-shadow-card:     ${s.shadow_card      ?? 'none'};
+  `;
+}
+
+// ─────────────────────────────────────────────
+// Base styles (use CSS vars throughout)
+// ─────────────────────────────────────────────
+
+const BASE_STYLES = `
   :host {
-    --primary-color: #1a1a2e;
-    --accent-color: #e94560;
-    --success-color: #22c55e;
-    --warning-color: #f59e0b;
-    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --font-size-base: 15px;
-    --card-bg: #ffffff;
-    --card-bg-dark: #1e1e2e;
-    --input-bg: #f9f9fb;
-    --input-bg-dark: #2a2a3e;
-    --input-border: #e2e2e8;
-    --input-border-focus: var(--accent-color);
-    --input-radius: 10px;
-    --btn-radius: 8px;
-    --text-primary: #111111;
-    --text-secondary: #555555;
-    --text-muted: #888888;
     display: block;
-    font-family: var(--font-family);
-    font-size: var(--font-size-base);
-  }
-
-  :host([theme="dark"]) {
-    --card-bg: var(--card-bg-dark);
-    --input-bg: var(--input-bg-dark);
-    --input-border: rgba(255,255,255,0.12);
-    --text-primary: #f0f0f0;
-    --text-secondary: #aaaaaa;
-    --text-muted: #666666;
+    font-family: var(--tfi-font-family);
+    font-size: var(--tfi-font-size);
+    color: var(--tfi-text-primary);
   }
 
   *, *::before, *::after { box-sizing: border-box; }
 
-  .container {
-    background: var(--card-bg);
-    border-radius: var(--input-radius);
+  .tfi-shell {
+    background: var(--tfi-background);
+    border-radius: var(--tfi-radius-card);
+    box-shadow: var(--tfi-shadow-card);
     padding: 1.5rem;
   }
 
-  .header {
-    margin-bottom: 1rem;
+  .tfi-header { margin-bottom: 1.25rem; }
+  .tfi-header h3 {
+    font-size: 1.05rem;
+    font-weight: var(--tfi-font-bold);
+    color: var(--tfi-text-primary);
+    margin: 0 0 0.2rem;
   }
-
-  .header h3 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0 0 0.25rem;
-  }
-
-  .header p {
-    font-size: 0.8125rem;
-    color: var(--text-muted);
+  .tfi-header p {
+    font-size: 0.8rem;
+    color: var(--tfi-text-muted);
     margin: 0;
     line-height: 1.5;
   }
 
-  /* ── Input area ── */
-  .input-wrapper {
-    position: relative;
-    margin-bottom: 0.875rem;
+  .tfi-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    font-weight: var(--tfi-font-bold);
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.02em;
+  }
+  .tfi-badge.verified  { background: rgba(34,197,94,0.12); color: var(--tfi-success); }
+  .tfi-badge.anonymous { background: rgba(128,128,128,0.12); color: var(--tfi-text-muted); }
+
+  .tfi-fields { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 0.875rem; }
+
+  .tfi-field-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: var(--tfi-font-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--tfi-text-muted);
+    margin-bottom: 0.3rem;
+  }
+
+  textarea, input[type="url"], input[type="password"] {
+    width: 100%;
+    padding: 0.75rem 0.875rem;
+    background: var(--tfi-surface);
+    border: 1.5px solid var(--tfi-border);
+    border-radius: var(--tfi-radius-input);
+    font-family: var(--tfi-font-family);
+    font-size: var(--tfi-font-size);
+    color: var(--tfi-text-primary);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
   }
 
   textarea {
-    width: 100%;
-    min-height: 120px;
-    padding: 0.875rem 2.75rem 0.875rem 0.875rem;
-    background: var(--input-bg);
-    border: 1.5px solid var(--input-border);
-    border-radius: var(--input-radius);
-    font-family: var(--font-family);
-    font-size: 0.9375rem;
-    color: var(--text-primary);
-    line-height: 1.6;
+    min-height: 110px;
     resize: vertical;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    outline: none;
+    line-height: 1.6;
   }
 
-  textarea:focus {
-    border-color: var(--input-border-focus);
-    box-shadow: 0 0 0 3px rgba(233,69,96,0.12);
+  textarea:focus, input[type="url"]:focus, input[type="password"]:focus {
+    border-color: var(--tfi-accent);
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
   }
 
-  textarea::placeholder { color: var(--text-muted); }
+  textarea::placeholder, input::placeholder { color: var(--tfi-text-muted); }
 
-  textarea.recording {
-    border-color: #ef4444;
-    box-shadow: 0 0 0 3px rgba(239,68,68,0.15);
-    animation: pulse-border 1.5s ease-in-out infinite;
+  .tfi-char-count {
+    font-size: 0.68rem;
+    color: var(--tfi-text-muted);
+    text-align: right;
+    margin-top: 0.2rem;
   }
+  .tfi-char-count.warn { color: var(--tfi-warning); }
 
-  @keyframes pulse-border {
-    0%, 100% { box-shadow: 0 0 0 3px rgba(239,68,68,0.15); }
-    50%       { box-shadow: 0 0 0 6px rgba(239,68,68,0.08); }
-  }
-
-  /* ── Voice button (inside textarea corner) ── */
-  .voice-btn {
-    position: absolute;
-    top: 0.6rem;
-    right: 0.6rem;
-    width: 32px;
-    height: 32px;
-    background: transparent;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
+  .tfi-divider {
     display: flex;
     align-items: center;
-    justify-content: center;
-    color: var(--text-muted);
-    transition: color 0.15s, background 0.15s;
-    padding: 0;
+    gap: 0.75rem;
+    color: var(--tfi-text-muted);
+    font-size: 0.7rem;
+    font-weight: var(--tfi-font-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .tfi-divider::before, .tfi-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--tfi-border);
   }
 
-  .voice-btn:hover { color: var(--accent-color); background: rgba(233,69,96,0.08); }
-  .voice-btn.active { color: #ef4444; background: rgba(239,68,68,0.1); }
-  .voice-btn.unsupported { opacity: 0.3; cursor: not-allowed; }
-
-  /* ── BYOK key input (collapsible) ── */
-  .key-toggle {
-    font-size: 0.75rem;
-    color: var(--text-muted);
+  .tfi-key-toggle {
+    font-size: 0.72rem;
+    color: var(--tfi-text-muted);
     background: none;
     border: none;
     cursor: pointer;
     padding: 0;
     margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 4px;
     text-decoration: underline;
     text-decoration-style: dotted;
+    font-family: var(--tfi-font-family);
   }
+  .tfi-key-row { display: none; margin-bottom: 0.875rem; }
+  .tfi-key-row.visible { display: block; }
+  .tfi-key-row input { font-family: monospace; font-size: 0.8125rem; }
 
-  .key-input-row {
-    display: none;
-    margin-bottom: 0.875rem;
-  }
-
-  .key-input-row.visible { display: flex; gap: 8px; }
-
-  .key-input-row input {
-    flex: 1;
-    padding: 0.5rem 0.75rem;
-    background: var(--input-bg);
-    border: 1.5px solid var(--input-border);
-    border-radius: 6px;
-    font-size: 0.8125rem;
-    font-family: monospace;
-    color: var(--text-primary);
-    outline: none;
-  }
-
-  .key-input-row input:focus { border-color: var(--input-border-focus); }
-
-  /* ── Submit button ── */
-  .submit-btn {
+  .tfi-submit {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     width: 100%;
     padding: 0.75rem 1.5rem;
-    background: var(--accent-color);
-    color: #fff;
+    background: var(--tfi-accent);
+    color: var(--tfi-accent-text);
     border: none;
-    border-radius: var(--btn-radius);
-    font-family: var(--font-family);
-    font-size: 0.9375rem;
-    font-weight: 600;
+    border-radius: var(--tfi-radius-btn);
+    font-family: var(--tfi-font-family);
+    font-size: var(--tfi-font-size);
+    font-weight: var(--tfi-font-bold);
     cursor: pointer;
     transition: opacity 0.15s, transform 0.1s;
   }
+  .tfi-submit:hover:not(:disabled) { opacity: 0.85; }
+  .tfi-submit:active:not(:disabled) { transform: scale(0.98); }
+  .tfi-submit:disabled { opacity: 0.45; cursor: not-allowed; }
 
-  .submit-btn:hover:not(:disabled) { opacity: 0.88; }
-  .submit-btn:active:not(:disabled) { transform: scale(0.98); }
-  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .tfi-status { margin-top: 1rem; padding: 0.875rem 1rem; border-radius: var(--tfi-radius-input); font-size: 0.875rem; line-height: 1.5; display: none; }
+  .tfi-status.visible { display: flex; align-items: flex-start; gap: 10px; }
+  .tfi-status.loading  { color: var(--tfi-text-secondary); background: rgba(128,128,128,0.06); }
+  .tfi-status.success  { color: var(--tfi-success); background: rgba(34,197,94,0.08); border-left: 3px solid var(--tfi-success); }
+  .tfi-status.review   { color: var(--tfi-warning); background: rgba(245,158,11,0.08); border-left: 3px solid var(--tfi-warning); }
+  .tfi-status.error    { color: var(--tfi-danger);  background: rgba(239,68,68,0.08); border-left: 3px solid var(--tfi-danger); }
+  .tfi-status.rejected { color: var(--tfi-danger);  background: rgba(239,68,68,0.08); border-left: 3px solid var(--tfi-danger); }
 
-  /* ── Status feedback ── */
-  .status {
-    margin-top: 1rem;
-    padding: 0.875rem 1rem;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    line-height: 1.5;
-    display: none;
-  }
-
-  .status.visible { display: block; }
-  .status.loading  { background: rgba(233,69,96,0.06); color: var(--text-secondary); display: flex; align-items: center; gap: 10px; }
-  .status.success  { background: rgba(34,197,94,0.08); color: #15803d; border-left: 3px solid var(--success-color); }
-  .status.review   { background: rgba(245,158,11,0.08); color: #92400e; border-left: 3px solid var(--warning-color); }
-  .status.error    { background: rgba(239,68,68,0.08); color: #b91c1c; border-left: 3px solid #ef4444; }
-  .status.rejected { background: rgba(239,68,68,0.08); color: #b91c1c; border-left: 3px solid #ef4444; }
-
-  .spinner {
-    width: 16px; height: 16px; flex-shrink: 0;
-    border: 2px solid rgba(233,69,96,0.2);
-    border-top-color: var(--accent-color);
+  .tfi-spinner {
+    width: 15px; height: 15px; flex-shrink: 0;
+    border: 2px solid rgba(128,128,128,0.2);
+    border-top-color: var(--tfi-accent);
     border-radius: 50%;
-    animation: spin 0.7s linear infinite;
+    animation: tfi-spin 0.7s linear infinite;
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes tfi-spin { to { transform: rotate(360deg); } }
 
-  /* ── Extracted event preview ── */
-  .event-preview {
+  .tfi-preview {
     margin-top: 0.875rem;
     padding: 0.875rem;
-    background: var(--input-bg);
-    border-radius: 8px;
-    border: 1px solid var(--input-border);
+    background: var(--tfi-surface);
+    border-radius: var(--tfi-radius-input);
+    border: 1.5px solid var(--tfi-border);
     font-size: 0.8125rem;
     display: none;
   }
+  .tfi-preview.visible { display: block; }
+  .tfi-preview-title { font-weight: var(--tfi-font-bold); font-size: 0.9375rem; color: var(--tfi-text-primary); margin-bottom: 0.5rem; }
+  .tfi-preview-row { display: flex; gap: 8px; margin-bottom: 0.2rem; color: var(--tfi-text-secondary); }
+  .tfi-preview-label { font-weight: var(--tfi-font-bold); min-width: 68px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--tfi-text-muted); padding-top: 1px; flex-shrink: 0; }
 
-  .event-preview.visible { display: block; }
-
-  .event-preview .preview-title {
-    font-weight: 700;
-    font-size: 0.9375rem;
-    color: var(--text-primary);
-    margin-bottom: 0.4rem;
-  }
-
-  .event-preview .preview-row {
+  .tfi-skin-bar {
     display: flex;
-    gap: 8px;
-    color: var(--text-secondary);
-    margin-bottom: 0.2rem;
-  }
-
-  .event-preview .preview-label {
-    font-weight: 600;
-    min-width: 70px;
-    color: var(--text-muted);
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    padding-top: 1px;
-  }
-
-  .token-badge {
-    display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
+    margin-top: 1rem;
+    padding-top: 0.875rem;
+    border-top: 1px solid var(--tfi-border);
+    flex-wrap: wrap;
+  }
+  .tfi-skin-bar-label {
+    font-size: 0.68rem;
+    color: var(--tfi-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: var(--tfi-font-bold);
+    margin-right: 2px;
+  }
+  .tfi-skin-btn {
     font-size: 0.7rem;
-    padding: 2px 8px;
+    padding: 3px 10px;
     border-radius: 999px;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
+    border: 1.5px solid var(--tfi-border);
+    background: transparent;
+    color: var(--tfi-text-muted);
+    cursor: pointer;
+    font-family: var(--tfi-font-family);
+    transition: border-color 0.12s, color 0.12s, background 0.12s;
   }
-  .token-badge.verified  { background: rgba(34,197,94,0.1); color: #15803d; }
-  .token-badge.anonymous { background: rgba(148,163,184,0.15); color: var(--text-muted); }
-
-  .char-count {
+  .tfi-skin-btn:hover { border-color: var(--tfi-accent); color: var(--tfi-accent); }
+  .tfi-skin-btn.active { background: var(--tfi-accent); color: var(--tfi-accent-text); border-color: var(--tfi-accent); }
+  .tfi-mode-btn {
+    margin-left: auto;
     font-size: 0.7rem;
-    color: var(--text-muted);
-    text-align: right;
-    margin-top: 0.25rem;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1.5px solid var(--tfi-border);
+    background: transparent;
+    color: var(--tfi-text-muted);
+    cursor: pointer;
+    font-family: var(--tfi-font-family);
+    transition: border-color 0.12s, color 0.12s;
   }
-  .char-count.warn { color: var(--warning-color); }
+  .tfi-mode-btn:hover { border-color: var(--tfi-accent); color: var(--tfi-accent); }
 `;
 
 // ─────────────────────────────────────────────
@@ -307,374 +366,291 @@ const INGEST_STYLES = /* css */`
 
 class TheFeedIngest extends HTMLElement {
   static get observedAttributes() {
-    return ['api', 'token', 'location-hint', 'placeholder', 'theme', 'api-key'];
+    return ['api', 'token', 'location-hint', 'placeholder', 'skin', 'mode', 'api-key'];
   }
 
   constructor() {
     super();
     this._shadow = this.attachShadow({ mode: 'open' });
-    this._recognition = null;
-    this._isRecording = false;
+    this._activeSkin = null;
+    this._resolvedMode = 'light';
+    this._skinVars = '';
     this._apiKey = null;
   }
 
   connectedCallback() {
     this._apiKey = this.getAttribute('api-key') ?? null;
-    this._render();
-    this._initSpeech();
-  }
-
-  attributeChangedCallback(name, _, newVal) {
-    if (name === 'api-key') { this._apiKey = newVal; return; }
-    if (this.isConnected) this._render();
+    this._resolveMode();
+    this._resolveSkin(this.getAttribute('skin') ?? 'default').then(() => this._render());
+    if ((this.getAttribute('mode') ?? 'auto') === 'auto') {
+      this._mql = window.matchMedia('(prefers-color-scheme: dark)');
+      this._mqlHandler = () => { this._resolveMode(); this._applyVars(); };
+      this._mql.addEventListener('change', this._mqlHandler);
+    }
   }
 
   disconnectedCallback() {
-    this._stopRecording();
+    this._mql?.removeEventListener('change', this._mqlHandler);
   }
 
-  // ── Rendering ──
+  attributeChangedCallback(name, _, newVal) {
+    if (!this.isConnected) return;
+    if (name === 'api-key') { this._apiKey = newVal; return; }
+    if (name === 'skin') { this._resolveSkin(newVal ?? 'default').then(() => this._applyVars()); return; }
+    if (name === 'mode') { this._resolveMode(); this._applyVars(); return; }
+    this._render();
+  }
+
+  _resolveMode() {
+    const attr = this.getAttribute('mode') ?? 'auto';
+    if (attr === 'dark')  { this._resolvedMode = 'dark';  return; }
+    if (attr === 'light') { this._resolvedMode = 'light'; return; }
+    this._resolvedMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  async _resolveSkin(skinAttr) {
+    if (!skinAttr || skinAttr === 'default') {
+      this._activeSkin = SKINS.default;
+    } else if (SKINS[skinAttr]) {
+      this._activeSkin = SKINS[skinAttr];
+    } else if (skinAttr.startsWith('http')) {
+      try {
+        const res = await fetch(skinAttr);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        this._activeSkin = await res.json();
+      } catch (e) {
+        console.warn('[TheFeedIngest] Remote skin failed:', e.message, '— using default');
+        this._activeSkin = SKINS.default;
+      }
+    } else {
+      this._activeSkin = SKINS.default;
+    }
+    this._skinVars = skinToVars(this._activeSkin, this._resolvedMode);
+  }
+
+  _applyVars() {
+    this._skinVars = skinToVars(this._activeSkin, this._resolvedMode);
+    const styleEl = this._shadow.getElementById('tfi-vars');
+    if (styleEl) styleEl.textContent = ':host { ' + this._skinVars + ' }';
+    this._shadow.querySelectorAll('.tfi-skin-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.skin === (this._activeSkin?.id ?? 'default'));
+    });
+    const modeBtn = this._shadow.getElementById('tfi-mode-btn');
+    if (modeBtn) modeBtn.textContent = this._resolvedMode === 'dark' ? '\u2600 Light' : '\u263e Dark';
+  }
 
   _render() {
     const placeholder = this.getAttribute('placeholder')
-      ?? "Paste a venue email, show listing, or just describe the event in plain English...\n\nExamples:\n• 'The Trews are playing the Commodore this Friday at 8pm. Tix $35 at the door.'\n• 'Hey can you add our show? We're playing the Legion Hall on April 20th, doors at 7, $10 advance'";
+      ?? "Paste a show listing, venue email, or describe the event in plain English...\n\nExamples:\n\u2022 'The Trews are playing the Commodore this Friday at 8pm. Tix $35.'\n\u2022 'We're at the Legion Hall on April 20th, doors 7pm, $10 advance'";
 
     const hasToken = !!this.getAttribute('token');
+    const skinId   = this._activeSkin?.id ?? 'default';
 
-    this._shadow.innerHTML = `
-      <style>${INGEST_STYLES}</style>
-      <div class="container">
-        <div class="header">
-          <h3>🎵 Add an Event to The Feed</h3>
-          <p>Just describe the show. No forms. No account needed.</p>
-        </div>
-
-        ${hasToken
-          ? `<div class="token-badge verified">✓ Verified source — events go live faster</div>`
-          : `<div class="token-badge anonymous">○ Public submission — pending editorial review</div>`
-        }
-
-        <div class="input-wrapper">
-          <textarea
-            id="tf-text"
-            placeholder="${this._escHtml(placeholder)}"
-            maxlength="10000"
-            spellcheck="true"
-            autocorrect="on"
-          ></textarea>
-          <button class="voice-btn" id="tf-voice" title="Click to speak" aria-label="Voice input">
-            ${this._iconMic()}
-          </button>
-        </div>
-        <div class="char-count" id="tf-char">0 / 10,000</div>
-
-        <button class="key-toggle" id="tf-key-toggle" type="button">
-          🔑 OpenAI API key required — click to enter
-        </button>
-        <div class="key-input-row" id="tf-key-row">
-          <input type="password" id="tf-api-key" placeholder="sk-..." autocomplete="off" spellcheck="false">
-        </div>
-
-        <button class="submit-btn" id="tf-submit" type="button">
-          ${this._iconSend()} Submit to The Feed
-        </button>
-
-        <div class="status" id="tf-status"></div>
-        <div class="event-preview" id="tf-preview"></div>
-      </div>`;
+    this._shadow.innerHTML =
+      '<style id="tfi-vars">:host { ' + this._skinVars + ' }</style>' +
+      '<style>' + BASE_STYLES + '</style>' +
+      '<div class="tfi-shell">' +
+        '<div class="tfi-header"><h3>\uD83C\uDFB5 Add an Event to The Feed</h3><p>Paste a URL, describe the show, or both. No forms. No account.</p></div>' +
+        '<div class="tfi-badge ' + (hasToken ? 'verified' : 'anonymous') + '">' + (hasToken ? '\u2713 Verified source' : '\u25CB Public submission') + '</div>' +
+        '<div class="tfi-fields">' +
+          '<div>' +
+            '<label class="tfi-field-label" for="tfi-url">Event URL <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>' +
+            '<input type="url" id="tfi-url" placeholder="https://bandsintown.com/\u2026 venue site, Facebook event, Eventbrite, etc." autocomplete="off" spellcheck="false">' +
+          '</div>' +
+          '<div class="tfi-divider">or add context</div>' +
+          '<div>' +
+            '<label class="tfi-field-label" for="tfi-text">Description <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>' +
+            '<textarea id="tfi-text" placeholder="' + this._escHtml(placeholder) + '" maxlength="10000" spellcheck="true" autocorrect="on"></textarea>' +
+            '<div class="tfi-char-count" id="tfi-char">0 / 10,000</div>' +
+          '</div>' +
+        '</div>' +
+        '<button class="tfi-key-toggle" id="tfi-key-toggle" type="button">\uD83D\uDD11 OpenAI API key required \u2014 click to enter</button>' +
+        '<div class="tfi-key-row" id="tfi-key-row"><input type="password" id="tfi-api-key" placeholder="sk-..." autocomplete="off" spellcheck="false"></div>' +
+        '<button class="tfi-submit" id="tfi-submit" type="button">' + this._iconSend() + ' Submit to The Feed</button>' +
+        '<div class="tfi-status" id="tfi-status"></div>' +
+        '<div class="tfi-preview" id="tfi-preview"></div>' +
+        '<div class="tfi-skin-bar">' +
+          '<span class="tfi-skin-bar-label">Skin</span>' +
+          Object.keys(SKINS).map(function(id) {
+            return '<button class="tfi-skin-btn' + (skinId === id ? ' active' : '') + '" data-skin="' + id + '">' + SKINS[id].name + '</button>';
+          }).join('') +
+          '<button class="tfi-mode-btn" id="tfi-mode-btn">' + (this._resolvedMode === 'dark' ? '\u2600 Light' : '\u263e Dark') + '</button>' +
+        '</div>' +
+      '</div>';
 
     this._bindEvents();
 
-    // Pre-fill API key if passed as attribute
     if (this._apiKey) {
-      const keyInput = this._shadow.getElementById('tf-api-key');
-      if (keyInput) keyInput.value = this._apiKey;
-      const keyRow = this._shadow.getElementById('tf-key-row');
-      const keyToggle = this._shadow.getElementById('tf-key-toggle');
-      keyRow.classList.add('visible');
-      keyToggle.textContent = '🔑 API key provided';
+      var ki = this._shadow.getElementById('tfi-api-key');
+      var kr = this._shadow.getElementById('tfi-key-row');
+      var kt = this._shadow.getElementById('tfi-key-toggle');
+      if (ki) ki.value = this._apiKey;
+      if (kr) kr.classList.add('visible');
+      if (kt) kt.textContent = '\uD83D\uDD11 API key provided';
     }
   }
 
   _bindEvents() {
-    const textarea  = this._shadow.getElementById('tf-text');
-    const voiceBtn  = this._shadow.getElementById('tf-voice');
-    const submitBtn = this._shadow.getElementById('tf-submit');
-    const keyToggle = this._shadow.getElementById('tf-key-toggle');
-    const keyRow    = this._shadow.getElementById('tf-key-row');
-    const charCount = this._shadow.getElementById('tf-char');
+    var self      = this;
+    var textarea  = this._shadow.getElementById('tfi-text');
+    var charCount = this._shadow.getElementById('tfi-char');
+    var keyToggle = this._shadow.getElementById('tfi-key-toggle');
+    var keyRow    = this._shadow.getElementById('tfi-key-row');
+    var submitBtn = this._shadow.getElementById('tfi-submit');
+    var modeBtn   = this._shadow.getElementById('tfi-mode-btn');
 
-    textarea.addEventListener('input', () => {
-      const len = textarea.value.length;
-      charCount.textContent = `${len.toLocaleString()} / 10,000`;
-      charCount.classList.toggle('warn', len > 8000);
+    if (textarea) {
+      textarea.addEventListener('input', function() {
+        var len = textarea.value.length;
+        charCount.textContent = len.toLocaleString() + ' / 10,000';
+        charCount.classList.toggle('warn', len > 8000);
+      });
+      textarea.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') self._submit();
+      });
+    }
+
+    if (keyToggle) {
+      keyToggle.addEventListener('click', function() {
+        var visible = keyRow.classList.toggle('visible');
+        keyToggle.textContent = visible ? '\uD83D\uDD11 Hide API key' : '\uD83D\uDD11 OpenAI API key required \u2014 click to enter';
+      });
+    }
+
+    if (submitBtn) submitBtn.addEventListener('click', function() { self._submit(); });
+
+    this._shadow.querySelectorAll('.tfi-skin-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() { self.setAttribute('skin', btn.dataset.skin); });
     });
 
-    keyToggle.addEventListener('click', () => {
-      const visible = keyRow.classList.toggle('visible');
-      keyToggle.textContent = visible ? '🔑 Hide API key' : '🔑 OpenAI API key required — click to enter';
-    });
-
-    voiceBtn.addEventListener('click', () => this._toggleRecording());
-    submitBtn.addEventListener('click', () => this._submit());
-
-    // Allow Ctrl+Enter to submit
-    textarea.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') this._submit();
-    });
+    if (modeBtn) {
+      modeBtn.addEventListener('click', function() {
+        self.setAttribute('mode', self._resolvedMode === 'dark' ? 'light' : 'dark');
+      });
+    }
   }
 
-  // ── Submission ──
-
   async _submit() {
-    const textarea  = this._shadow.getElementById('tf-text');
-    const keyInput  = this._shadow.getElementById('tf-api-key');
-    const submitBtn = this._shadow.getElementById('tf-submit');
-    const status    = this._shadow.getElementById('tf-status');
-    const preview   = this._shadow.getElementById('tf-preview');
+    var urlInput  = this._shadow.getElementById('tfi-url');
+    var textarea  = this._shadow.getElementById('tfi-text');
+    var keyInput  = this._shadow.getElementById('tfi-api-key');
+    var submitBtn = this._shadow.getElementById('tfi-submit');
+    var preview   = this._shadow.getElementById('tfi-preview');
 
-    const text   = textarea.value.trim();
-    const apiKey = keyInput?.value?.trim() || this._apiKey;
+    var url    = (urlInput?.value ?? '').trim();
+    var text   = (textarea?.value ?? '').trim();
+    var apiKey = (keyInput?.value ?? '').trim() || this._apiKey;
 
-    if (!text) {
-      this._showStatus('error', 'Please enter some event details first.');
+    if (!url && !text) {
+      this._showStatus('error', 'Please enter a URL, a description, or both.');
       return;
     }
-
+    if (url && !this._isValidUrl(url)) {
+      this._showStatus('error', "\u274C That doesn't look like a valid URL. Check it and try again.");
+      return;
+    }
     if (!apiKey || !apiKey.startsWith('sk-')) {
-      this._showStatus('error', 'An OpenAI API key (sk-...) is required. Click the key icon above to enter it.');
+      this._showStatus('error', 'An OpenAI API key (sk-\u2026) is required. Click the key icon above to enter it.');
       return;
     }
 
-    // Loading state
     submitBtn.disabled = true;
     preview.classList.remove('visible');
-    this._showStatus('loading', 'Extracting event details…');
+    this._showStatus('loading', 'Extracting event details\u2026');
 
-    const api     = (this.getAttribute('api') ?? DEFAULT_INGEST_API).replace(/\/$/, '');
-    const token   = this.getAttribute('token');
-    const locHint = this.getAttribute('location-hint') ?? '';
+    var api     = (this.getAttribute('api') ?? DEFAULT_INGEST_API).replace(/\/$/, '');
+    var token   = this.getAttribute('token');
+    var locHint = this.getAttribute('location-hint') ?? '';
 
-    const headers = {
-      'Content-Type': 'application/json',
-      'X-Api-Key': apiKey,
-    };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
+    var headers = { 'Content-Type': 'application/json', 'X-Api-Key': apiKey };
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+
+    var body = { source: token ? 'verified_source' : 'web_component' };
+    if (url)     body.url           = url;
+    if (text)    body.text          = text;
+    if (locHint) body.location_hint = locHint;
 
     try {
-      const res = await fetch(`${api}/ingest/raw`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          text,
-          location_hint: locHint,
-          source: token ? 'verified_source' : 'web_component',
-        }),
-      });
-
-      const data = await res.json();
+      var res  = await fetch(api + '/ingest/raw', { method: 'POST', headers: headers, body: JSON.stringify(body) });
+      var data = await res.json();
 
       if (!res.ok || data.error) {
-        const msg = data.error ?? data.detail ?? `Server error (${res.status})`;
-        this._showStatus('error', `❌ ${msg}`);
+        var msg = data.error ?? data.detail ?? ('Server error (' + res.status + ')');
+        this._showStatus('error', '\u274C ' + msg);
         this.dispatchEvent(new CustomEvent('the-feed:error', { detail: { error: msg }, bubbles: true }));
         return;
       }
-
       if (data.status === 'rejected') {
-        this._showStatus('rejected', `🚫 Submission rejected: ${data.reason ?? 'Brand safety check failed.'}`);
+        this._showStatus('rejected', '\uD83D\uDEAB Rejected: ' + (data.reason ?? 'Brand safety check failed.'));
         return;
       }
-
       if (data.status === 'no_events_found') {
-        this._showStatus('error', `🤔 Couldn't extract event details. Try including a performer name, date, and venue.${data.extractionNotes ? ` Hint: ${data.extractionNotes}` : ''}`);
+        this._showStatus('error', "\uD83E\uDD14 Couldn't find event details. Try adding a performer, date, and venue." + (data.extractionNotes ? ' Hint: ' + data.extractionNotes : ''));
         return;
       }
 
-      // Success
-      const isPending = data.status === 'pending_review';
-      this._showStatus(
-        isPending ? 'review' : 'success',
-        data.message ?? (isPending ? '📬 Submitted for review.' : '✅ Event added to The Feed!')
-      );
+      var isPending = data.status === 'pending_review';
+      this._showStatus(isPending ? 'review' : 'success', data.message ?? (isPending ? '\uD83D\uDCEC Submitted for review.' : '\u2705 Event added to The Feed!'));
+      if (data.event) this._showPreview(data.event);
 
-      if (data.event) {
-        this._showEventPreview(data.event);
+      if (urlInput) urlInput.value = '';
+      if (textarea) {
+        textarea.value = '';
+        var cc = this._shadow.getElementById('tfi-char');
+        if (cc) cc.textContent = '0 / 10,000';
       }
-
-      // Clear the textarea on success
-      textarea.value = '';
-      this._shadow.getElementById('tf-char').textContent = '0 / 10,000';
 
       this.dispatchEvent(new CustomEvent('the-feed:submitted', {
         detail: { status: data.status, event: data.event, id: data.id, message: data.message },
         bubbles: true,
       }));
-
     } catch (err) {
-      this._showStatus('error', `❌ Network error: ${err.message}`);
+      this._showStatus('error', '\u274C Network error: ' + err.message);
       this.dispatchEvent(new CustomEvent('the-feed:error', { detail: { error: err.message }, bubbles: true }));
     } finally {
       submitBtn.disabled = false;
     }
   }
 
-  // ── Status display ──
-
   _showStatus(type, message) {
-    const el = this._shadow.getElementById('tf-status');
-    el.className = `status visible ${type}`;
+    var el = this._shadow.getElementById('tfi-status');
+    el.className = 'tfi-status visible ' + type;
     el.innerHTML = type === 'loading'
-      ? `<div class="spinner"></div><span>${message}</span>`
-      : message;
+      ? '<div class="tfi-spinner"></div><span>' + message + '</span>'
+      : '<span>' + message + '</span>';
   }
 
-  _showEventPreview(evt) {
-    const preview = this._shadow.getElementById('tf-preview');
-    const performers = Array.isArray(evt.performer) ? evt.performer : [evt.performer].filter(Boolean);
-    const offers = Array.isArray(evt.offers) ? evt.offers : [evt.offers].filter(Boolean);
-    const price = offers[0]?.price != null ? `$${offers[0].price} ${offers[0].priceCurrency ?? 'CAD'}` : 'TBA';
-    const date = evt.startDate ? new Date(evt.startDate).toLocaleString('en-CA', {
-      weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
-      hour: '2-digit', minute: '2-digit',
-    }) : 'TBA';
+  _showPreview(evt) {
+    var preview    = this._shadow.getElementById('tfi-preview');
+    var performers = [].concat(evt.performer ?? []).filter(Boolean);
+    var offers     = [].concat(evt.offers ?? []).filter(Boolean);
+    var price      = offers[0]?.price != null ? '$' + offers[0].price + ' ' + (offers[0].priceCurrency ?? 'CAD') : 'TBA';
+    var date       = evt.startDate
+      ? new Date(evt.startDate).toLocaleString('en-CA', { weekday:'long', month:'long', day:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit' })
+      : 'TBA';
+    var locality   = evt.location?.address?.addressLocality ? ', ' + this._escHtml(evt.location.address.addressLocality) : '';
 
-    preview.className = 'event-preview visible';
-    preview.innerHTML = `
-      <div class="preview-title">${this._escHtml(evt.name ?? 'Untitled Event')}</div>
-      <div class="preview-row"><span class="preview-label">Date</span><span>${this._escHtml(date)}</span></div>
-      <div class="preview-row"><span class="preview-label">Venue</span><span>${this._escHtml(evt.location?.name ?? 'TBA')}${evt.location?.address?.addressLocality ? `, ${this._escHtml(evt.location.address.addressLocality)}` : ''}</span></div>
-      ${performers.length ? `<div class="preview-row"><span class="preview-label">Artists</span><span>${performers.map((p) => this._escHtml(p.name)).join(', ')}</span></div>` : ''}
-      <div class="preview-row"><span class="preview-label">Tickets</span><span>${this._escHtml(price)}</span></div>
-      <div class="preview-row"><span class="preview-label">Token ID</span><span style="font-family:monospace; font-size:0.75rem;">${this._escHtml(evt['@id']?.substring(0, 24))}…</span></div>
-    `;
+    preview.className = 'tfi-preview visible';
+    preview.innerHTML =
+      '<div class="tfi-preview-title">'  + this._escHtml(evt.name ?? 'Untitled Event') + '</div>' +
+      '<div class="tfi-preview-row"><span class="tfi-preview-label">Date</span><span>'    + this._escHtml(date) + '</span></div>' +
+      '<div class="tfi-preview-row"><span class="tfi-preview-label">Venue</span><span>'   + this._escHtml(evt.location?.name ?? 'TBA') + locality + '</span></div>' +
+      (performers.length ? '<div class="tfi-preview-row"><span class="tfi-preview-label">Artists</span><span>' + performers.map(p => this._escHtml(p.name ?? p)).join(', ') + '</span></div>' : '') +
+      '<div class="tfi-preview-row"><span class="tfi-preview-label">Tickets</span><span>' + this._escHtml(price) + '</span></div>' +
+      '<div class="tfi-preview-row"><span class="tfi-preview-label">ID</span><span style="font-family:monospace;font-size:0.72rem;">' + this._escHtml(String(evt['@id'] ?? '').substring(0, 26)) + '\u2026</span></div>';
   }
 
-  // ── Voice Input ──
-
-  _initSpeech() {
-    const SpeechRecognition = window.SpeechRecognition ?? window.webkitSpeechRecognition;
-    const voiceBtn = this._shadow.getElementById('tf-voice');
-
-    if (!SpeechRecognition) {
-      voiceBtn?.classList.add('unsupported');
-      voiceBtn?.setAttribute('title', 'Voice input not supported in this browser');
-      return;
-    }
-
-    this._recognition = new SpeechRecognition();
-    this._recognition.continuous = true;
-    this._recognition.interimResults = true;
-    this._recognition.lang = 'en-CA';
-
-    let finalTranscript = '';
-
-    this._recognition.onresult = (event) => {
-      let interim = '';
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          finalTranscript += transcript + ' ';
-        } else {
-          interim = transcript;
-        }
-      }
-
-      const textarea = this._shadow.getElementById('tf-text');
-      if (textarea) {
-        textarea.value = finalTranscript + interim;
-        const len = textarea.value.length;
-        const charCount = this._shadow.getElementById('tf-char');
-        if (charCount) charCount.textContent = `${len.toLocaleString()} / 10,000`;
-      }
-    };
-
-    this._recognition.onend = () => {
-      if (this._isRecording) {
-        // Auto-restart if still in recording mode (handles pauses)
-        this._recognition.start();
-      }
-    };
-
-    this._recognition.onerror = (event) => {
-      console.warn('[TheFeedIngest] Speech recognition error:', event.error);
-      if (event.error === 'not-allowed') {
-        this._showStatus('error', '🎤 Microphone access denied. Please allow microphone access in your browser settings.');
-      }
-      this._stopRecording();
-    };
+  _isValidUrl(s) {
+    try { var u = new URL(s); return u.protocol === 'http:' || u.protocol === 'https:'; }
+    catch (e) { return false; }
   }
-
-  _toggleRecording() {
-    if (!this._recognition) return;
-    this._isRecording ? this._stopRecording() : this._startRecording();
-  }
-
-  _startRecording() {
-    const textarea = this._shadow.getElementById('tf-text');
-    const voiceBtn = this._shadow.getElementById('tf-voice');
-
-    this._isRecording = true;
-    textarea?.classList.add('recording');
-    voiceBtn?.classList.add('active');
-    voiceBtn?.setAttribute('title', 'Recording… click to stop');
-    voiceBtn?.setAttribute('aria-label', 'Stop recording');
-
-    try {
-      this._recognition.start();
-    } catch (e) {
-      // Already started
-    }
-
-    this._showStatus('loading', '🎤 Listening… speak your event details. Click the mic to stop.');
-  }
-
-  _stopRecording() {
-    if (!this._recognition) return;
-    const textarea = this._shadow.getElementById('tf-text');
-    const voiceBtn = this._shadow.getElementById('tf-voice');
-    const status   = this._shadow.getElementById('tf-status');
-
-    this._isRecording = false;
-    textarea?.classList.remove('recording');
-    voiceBtn?.classList.remove('active');
-    voiceBtn?.setAttribute('title', 'Click to speak');
-    voiceBtn?.setAttribute('aria-label', 'Voice input');
-
-    try {
-      this._recognition.stop();
-    } catch (e) {
-      // Already stopped
-    }
-
-    if (status?.classList.contains('loading')) {
-      status.className = 'status';
-    }
-  }
-
-  // ── Utilities ──
 
   _escHtml(str) {
-    return String(str ?? '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-
-  _iconMic() {
-    return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-      <line x1="12" y1="19" x2="12" y2="23"/>
-      <line x1="8" y1="23" x2="16" y2="23"/>
-    </svg>`;
+    return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   _iconSend() {
-    return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-    </svg>`;
+    return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
   }
 }
 
@@ -682,4 +658,4 @@ if (!customElements.get('the-feed-ingest')) {
   customElements.define('the-feed-ingest', TheFeedIngest);
 }
 
-export { TheFeedIngest };
+export { TheFeedIngest, SKINS, skinToVars };

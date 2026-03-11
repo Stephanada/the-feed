@@ -135,6 +135,7 @@ Always return this exact JSON structure (omit fields you cannot determine — ne
 
 export async function ingestRaw({
   text,
+  url,
   source,
   locationHint,
   apiKey,
@@ -161,7 +162,19 @@ export async function ingestRaw({
     locationHint
   );
 
-  const nlpResult = await callOpenAI(systemPrompt, text, apiKey);
+  // Build the user message — URL takes priority as primary source; text is additional context
+  let userMessage = '';
+  if (url) {
+    userMessage += `Source URL: ${url}\nTreat the event listing at this URL as the primary source of information.\n\n`;
+  }
+  if (text) {
+    userMessage += url ? `Additional context provided by the submitter:\n${text}` : text;
+  }
+  if (!userMessage.trim()) {
+    userMessage = url ?? '';
+  }
+
+  const nlpResult = await callOpenAI(systemPrompt, userMessage, apiKey);
 
   if (nlpResult.error) {
     return { error: 'NLP extraction failed', detail: nlpResult.error, statusCode: 502 };

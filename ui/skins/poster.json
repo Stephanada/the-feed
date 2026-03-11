@@ -1,0 +1,64 @@
+{
+  "id": "poster",
+  "name": "Poster",
+  "author": "The Feed",
+  "version": "1.0.0",
+  "description": "Bold, high-contrast, music venue energy. Designed to feel at home on a show poster or gig listing site.",
+  "style_id": "the-feed/poster",
+  "modes": {
+    "light": {
+      "colors": {
+        "accent":         "#ff3c00",
+        "accent_text":    "#ffffff",
+        "background":     "#fffdf7",
+        "surface":        "#fff8ec",
+        "border":         "#f0d9b5",
+        "text_primary":   "#1a0a00",
+        "text_secondary": "#4a2e1a",
+        "text_muted":     "#a07850",
+        "success":        "#2d9a4e",
+        "warning":        "#e8a317",
+        "danger":         "#cc1100"
+      },
+      "typography": {
+        "font_family":        "'Anton', 'Impact', 'Arial Black', sans-serif",
+        "font_size_base":     "15px",
+        "font_weight_normal": "400",
+        "font_weight_bold":   "700"
+      },
+      "shape": {
+        "radius_input": "2px",
+        "radius_btn":   "2px",
+        "radius_card":  "2px",
+        "shadow_card":  "4px 4px 0px #1a0a00"
+      }
+    },
+    "dark": {
+      "colors": {
+        "accent":         "#ff3c00",
+        "accent_text":    "#ffffff",
+        "background":     "#0f0800",
+        "surface":        "#1a1000",
+        "border":         "rgba(255,60,0,0.25)",
+        "text_primary":   "#fff8ec",
+        "text_secondary": "#d4a870",
+        "text_muted":     "#7a5535",
+        "success":        "#39d353",
+        "warning":        "#f0883e",
+        "danger":         "#ff3c00"
+      },
+      "typography": {
+        "font_family":        "'Anton', 'Impact', 'Arial Black', sans-serif",
+        "font_size_base":     "15px",
+        "font_weight_normal": "400",
+        "font_weight_bold":   "700"
+      },
+      "shape": {
+        "radius_input": "2px",
+        "radius_btn":   "2px",
+        "radius_card":  "2px",
+        "shadow_card":  "4px 4px 0px rgba(255,60,0,0.5)"
+      }
+    }
+  }
+}

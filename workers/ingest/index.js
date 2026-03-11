@@ -94,17 +94,30 @@ async function handleIngestRaw(request, env, ctx) {
     return json({ error: 'Request body must be valid JSON' }, 400);
   }
 
-  const { text, source, location_hint } = body;
+  const { text, url, source, location_hint } = body;
 
-  if (!text || typeof text !== 'string' || text.trim().length < 10) {
+  if (!text && !url) {
     return json({
-      error: 'A `text` field with at least 10 characters is required.',
-      hint: 'Paste a venue email, show listing, social media post, or describe the event in plain language.',
+      error: 'A `text` description or `url` (or both) is required.',
+      hint: 'Paste a URL to an event page, describe the event in plain language, or provide both.',
     }, 400);
   }
 
-  if (text.length > 10000) {
+  if (text && (typeof text !== 'string' || text.trim().length < 5)) {
+    return json({ error: 'If provided, `text` must be at least 5 characters.' }, 400);
+  }
+
+  if (text && text.length > 10000) {
     return json({ error: 'Text exceeds 10,000 character limit. Please trim to the relevant event details.' }, 400);
+  }
+
+  if (url && typeof url === 'string') {
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') throw new Error('Bad protocol');
+    } catch {
+      return json({ error: 'The `url` field must be a valid http:// or https:// URL.' }, 400);
+    }
   }
 
   // ── 2. Resolve BYOK OpenAI key
@@ -125,7 +138,8 @@ async function handleIngestRaw(request, env, ctx) {
   // ── 4. Run the full ingestion pipeline
   const submitterIp = request.headers.get('CF-Connecting-IP') ?? 'unknown';
   const result = await ingestRaw({
-    text: text.trim(),
+    text: text?.trim() ?? '',
+    url: url?.trim() ?? '',
     source: source ?? sourceIdentity.name,
     locationHint: location_hint ?? sourceIdentity.locationHint ?? '',
     apiKey,
