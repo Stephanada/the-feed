@@ -69,7 +69,7 @@ jobs:
           workingDirectory: workers/ingest
           command: deploy --env ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
 
-      - name: Build UI Component
+      - name: Build UI — landing page + components + skins
         run: npm run build:ui
 
       - name: Deploy to Cloudflare Pages
@@ -77,7 +77,15 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy ./dist --project-name=the-feed --branch=${{ github.ref_name }}
+          command: pages deploy ./dist --project-name=the-feed-ui --branch=${{ github.ref_name }}
+
+      - name: Print Pages URL
+        run: |
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "🌐 Production: https://the-feed-ui.pages.dev"
+          else
+            echo "🔍 Preview: https://${{ github.ref_name }}.the-feed-ui.pages.dev"
+          fi
 
       - name: Deployment summary
         run: |

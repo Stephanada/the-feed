@@ -1,0 +1,20 @@
+## THE FEED — Cloudflare Pages configuration
+##
+## Project name:  the-feed-ui
+## Production URL: https://the-feed-ui.pages.dev
+## Source:         ./dist  (built by `npm run build:ui`)
+##
+## First-time setup (run once from your machine):
+##
+##   npx wrangler pages project create the-feed-ui
+##
+## Then push to main — the GitHub Actions deploy.yml takes over.
+##
+## Custom domain (after project is created in the Cloudflare dashboard):
+##   Workers & Pages → the-feed-ui → Custom domains → Add domain
+##   e.g. thefeed.ca  or  feed.vistaradio.ca
+
+[pages]
+name    = "the-feed-ui"
+build   = "npm run build:ui"
+output  = "dist"
