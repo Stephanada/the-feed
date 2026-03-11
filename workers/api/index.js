@@ -99,26 +99,36 @@ async function fetchLedger(env, ctx) {
   // Fetch the index file which lists all event IDs
   const indexUrl = `${cdnBase}/${owner}/${repo}/${branch}/ledger/events/production/index.json`;
 
-  const cacheKey = new Request(indexUrl);
   const cache = caches.default;
-  let cachedIndex = await cache.match(cacheKey);
+  const cacheKey = new Request(indexUrl);
+  let cachedIndex = await cache.match(cacheKey).catch(() => null);
 
   let index;
   if (cachedIndex) {
     index = await cachedIndex.json();
   } else {
     const res = await fetch(indexUrl, {
-      headers: { Authorization: `Bearer ${env.GITHUB_TOKEN}` },
+      headers: env.GITHUB_TOKEN
+        ? { Authorization: `Bearer ${env.GITHUB_TOKEN}` }
+        : {},
     });
-    if (!res.ok) throw new Error(`Ledger index fetch failed: ${res.status}`);
+    if (!res.ok) {
+      // Return empty ledger gracefully rather than throwing
+      if (res.status === 404) return [];
+      throw new Error(`Ledger index fetch failed: ${res.status}`);
+    }
     index = await res.json();
 
-    // Cache the index for TTL
-    const cacheRes = new Response(JSON.stringify(index), {
-      headers: { "Cache-Control": `public, max-age=300` },
-    });
-    ctx.waitUntil(cache.put(cacheKey, cacheRes));
+    // Cache the index for TTL (best-effort)
+    try {
+      const cacheRes = new Response(JSON.stringify(index), {
+        headers: { "Cache-Control": `public, max-age=300` },
+      });
+      ctx.waitUntil(cache.put(cacheKey, cacheRes));
+    } catch (_) {}
   }
+
+  if (!Array.isArray(index?.events) || index.events.length === 0) return [];
 
   // Fetch each event file concurrently
   const events = await Promise.all(
@@ -138,23 +148,27 @@ async function fetchEventById(id, env, ctx, branch) {
   const cache = caches.default;
   const cacheKey = new Request(url);
 
-  let cached = await cache.match(cacheKey);
+  let cached = await cache.match(cacheKey).catch(() => null);
   if (cached) return cached.json();
 
   const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${env.GITHUB_TOKEN}` },
+    headers: env.GITHUB_TOKEN
+      ? { Authorization: `Bearer ${env.GITHUB_TOKEN}` }
+      : {},
   });
   if (!res.ok) return null;
 
   const event = await res.json();
-  ctx.waitUntil(
-    cache.put(
-      cacheKey,
-      new Response(JSON.stringify(event), {
-        headers: { "Cache-Control": "public, max-age=300" },
-      })
-    )
-  );
+  try {
+    ctx.waitUntil(
+      cache.put(
+        cacheKey,
+        new Response(JSON.stringify(event), {
+          headers: { "Cache-Control": "public, max-age=300" },
+        })
+      )
+    );
+  } catch (_) {}
   return event;
 }
 

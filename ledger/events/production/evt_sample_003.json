@@ -1,0 +1,37 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "@id": "evt_sample_003",
+  "name": "Electronic Night",
+  "description": "Sample electronic music event in The Feed demo ledger.",
+  "startDate": "2026-04-25T22:00:00-04:00",
+  "endDate": "2026-04-26T02:00:00-04:00",
+  "doorTime": "2026-04-25T21:00:00-04:00",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "genre": ["electronic", "dance"],
+  "location": {
+    "@type": "Place",
+    "name": "The Warehouse"
+  },
+  "performer": [
+    {
+      "@type": "Person",
+      "name": "DJ Sample"
+    }
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "25.00",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "url": "https://thefeed.site"
+  },
+  "_feed": {
+    "sourceToken": "demo",
+    "sourceAuthority": "verified_venue",
+    "trustScore": 0.88,
+    "scope": "local",
+    "submittedAt": "2026-03-11T00:00:00Z"
+  }
+}

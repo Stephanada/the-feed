@@ -1,0 +1,37 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "@id": "evt_sample_001",
+  "name": "The Feed — Demo Night",
+  "description": "A sample event to demonstrate The Feed open event protocol. This is placeholder data.",
+  "startDate": "2026-04-12T20:00:00-04:00",
+  "endDate": "2026-04-12T23:00:00-04:00",
+  "doorTime": "2026-04-12T19:00:00-04:00",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "genre": ["indie rock", "alternative"],
+  "location": {
+    "@type": "Place",
+    "name": "The Fillmore"
+  },
+  "performer": [
+    {
+      "@type": "MusicGroup",
+      "name": "Sample Artist"
+    }
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "20.00",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "url": "https://thefeed.site"
+  },
+  "_feed": {
+    "sourceToken": "demo",
+    "sourceAuthority": "verified_venue",
+    "trustScore": 0.95,
+    "scope": "local",
+    "submittedAt": "2026-03-11T00:00:00Z"
+  }
+}
