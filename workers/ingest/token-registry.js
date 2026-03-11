@@ -36,6 +36,10 @@
 const STATIC_REGISTRY = [
   // ── Example entries — replace with real hashed tokens ──
   // To generate: sha256(your-token-string) → paste hash here
+  //
+  // openaiKey is OPTIONAL. If set, this token's submissions will use that key
+  // server-side — the submitter doesn't need to enter a key in the component.
+  // Store the actual sk-... value in Cloudflare KV rather than here in plaintext.
   {
     tokenHash: 'REPLACE_WITH_SHA256_OF_YOUR_CORPORATE_ADMIN_TOKEN',
     name: 'Vista Radio — Network Operations',
@@ -44,6 +48,7 @@ const STATIC_REGISTRY = [
     defaultTargetGroups: ['vista-radio-national'],
     locationHint: 'Canada',
     active: true,
+    // openaiKey: 'sk-...',  // set in KV instead — never commit plaintext keys
   },
   {
     tokenHash: 'REPLACE_WITH_SHA256_OF_KAMLOOPS_STATION_TOKEN',

@@ -25,9 +25,16 @@
  *   Body:
  *     {
  *       "text": "The Trews are playing the Commodore this Friday at 8pm...",
+ *       "url": "https://bandsintown.com/...",   // optional — URL to event page
  *       "source": "optional human label for this submission",
- *       "location_hint": "Vancouver, BC"   // optional geo context
+ *       "location_hint": "Vancouver, BC"        // optional geo context
  *     }
+ *
+ * OPENAI KEY RESOLUTION (BYOK):
+ *   1. X-Api-Key request header       (end-user provides their own key)
+ *   2. Source token's registered key  (station/org key stored server-side in KV)
+ *   3. env.DEFAULT_OPENAI_KEY secret  (deployment owner's fallback key)
+ *   At least one tier must be configured. The component handles tier 1 automatically.
  *
  * RESPONSE (success):
  *   {
@@ -121,21 +128,27 @@ async function handleIngestRaw(request, env, ctx) {
   }
 
   // ── 2. Resolve BYOK OpenAI key
-  // Priority: X-Api-Key header → env default (for verified station tokens)
-  const apiKey = request.headers.get('X-Api-Key') ?? env.DEFAULT_OPENAI_KEY;
-  if (!apiKey || !apiKey.startsWith('sk-')) {
-    return json({
-      error: 'An OpenAI API key is required.',
-      detail: 'Provide your key in the `X-Api-Key` header. This service uses Bring Your Own Key (BYOK).',
-    }, 401);
-  }
-
-  // ── 3. Resolve source token → trust level
+  // Priority: X-Api-Key header → source token's registered key → env.DEFAULT_OPENAI_KEY
+  // This lets:
+  //   - End users provide their own key via the component's key field
+  //   - Verified stations have their key stored server-side in their token registry entry
+  //   - Network admins set a fallback key in wrangler secrets for their deployment
   const authHeader = request.headers.get('Authorization') ?? '';
   const sourceToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : null;
   const sourceIdentity = await resolveSourceToken(sourceToken, env);
 
-  // ── 4. Run the full ingestion pipeline
+  const apiKey = request.headers.get('X-Api-Key')
+    ?? sourceIdentity.openaiKey
+    ?? env.DEFAULT_OPENAI_KEY;
+
+  if (!apiKey || !apiKey.startsWith('sk-')) {
+    return json({
+      error: 'An OpenAI API key is required.',
+      detail: 'Provide your key in the `X-Api-Key` request header. This service uses Bring Your Own Key (BYOK). Verified source tokens may have a key registered server-side.',
+    }, 401);
+  }
+
+  // ── 3. Run the full ingestion pipeline
   const submitterIp = request.headers.get('CF-Connecting-IP') ?? 'unknown';
   const result = await ingestRaw({
     text: text?.trim() ?? '',

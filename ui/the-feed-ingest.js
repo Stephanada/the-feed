@@ -247,6 +247,8 @@ const BASE_STYLES = `
     background: var(--tfi-border);
   }
 
+  .tfi-key-section { margin-bottom: 0.875rem; }
+
   .tfi-key-toggle {
     font-size: 0.72rem;
     color: var(--tfi-text-muted);
@@ -254,14 +256,30 @@ const BASE_STYLES = `
     border: none;
     cursor: pointer;
     padding: 0;
-    margin-bottom: 0.5rem;
     text-decoration: underline;
     text-decoration-style: dotted;
     font-family: var(--tfi-font-family);
   }
-  .tfi-key-row { display: none; margin-bottom: 0.875rem; }
+  .tfi-key-row { display: none; margin-top: 0.4rem; }
   .tfi-key-row.visible { display: block; }
-  .tfi-key-row input { font-family: monospace; font-size: 0.8125rem; }
+  .tfi-key-row input { font-family: monospace; font-size: 0.8125rem; margin-bottom: 0.35rem; }
+  .tfi-key-save-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    color: var(--tfi-text-muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  .tfi-key-save-row input[type="checkbox"] { cursor: pointer; accent-color: var(--tfi-accent); }
+  .tfi-key-saved-note {
+    display: none;
+    font-size: 0.7rem;
+    color: var(--tfi-success);
+    margin-top: 0.2rem;
+  }
+  .tfi-key-saved-note.visible { display: block; }
 
   .tfi-submit {
     display: flex;
@@ -464,8 +482,7 @@ class TheFeedIngest extends HTMLElement {
             '<div class="tfi-char-count" id="tfi-char">0 / 10,000</div>' +
           '</div>' +
         '</div>' +
-        '<button class="tfi-key-toggle" id="tfi-key-toggle" type="button">\uD83D\uDD11 OpenAI API key required \u2014 click to enter</button>' +
-        '<div class="tfi-key-row" id="tfi-key-row"><input type="password" id="tfi-api-key" placeholder="sk-..." autocomplete="off" spellcheck="false"></div>' +
+        this._renderKeySection() +
         '<button class="tfi-submit" id="tfi-submit" type="button">' + this._iconSend() + ' Submit to The Feed</button>' +
         '<div class="tfi-status" id="tfi-status"></div>' +
         '<div class="tfi-preview" id="tfi-preview"></div>' +
@@ -479,15 +496,6 @@ class TheFeedIngest extends HTMLElement {
       '</div>';
 
     this._bindEvents();
-
-    if (this._apiKey) {
-      var ki = this._shadow.getElementById('tfi-api-key');
-      var kr = this._shadow.getElementById('tfi-key-row');
-      var kt = this._shadow.getElementById('tfi-key-toggle');
-      if (ki) ki.value = this._apiKey;
-      if (kr) kr.classList.add('visible');
-      if (kt) kt.textContent = '\uD83D\uDD11 API key provided';
-    }
   }
 
   _bindEvents() {
@@ -496,6 +504,9 @@ class TheFeedIngest extends HTMLElement {
     var charCount = this._shadow.getElementById('tfi-char');
     var keyToggle = this._shadow.getElementById('tfi-key-toggle');
     var keyRow    = this._shadow.getElementById('tfi-key-row');
+    var keyInput  = this._shadow.getElementById('tfi-api-key');
+    var saveCb    = this._shadow.getElementById('tfi-key-save');
+    var savedNote = this._shadow.getElementById('tfi-key-saved-note');
     var submitBtn = this._shadow.getElementById('tfi-submit');
     var modeBtn   = this._shadow.getElementById('tfi-mode-btn');
 
@@ -513,7 +524,26 @@ class TheFeedIngest extends HTMLElement {
     if (keyToggle) {
       keyToggle.addEventListener('click', function() {
         var visible = keyRow.classList.toggle('visible');
-        keyToggle.textContent = visible ? '\uD83D\uDD11 Hide API key' : '\uD83D\uDD11 OpenAI API key required \u2014 click to enter';
+        keyToggle.textContent = visible ? '🔑 Hide key' : '🔑 Enter your OpenAI API key';
+      });
+    }
+
+    // Save key to localStorage when checkbox is ticked or key is changed
+    if (keyInput && saveCb) {
+      keyInput.addEventListener('change', function() {
+        if (saveCb.checked && keyInput.value.startsWith('sk-')) {
+          try { localStorage.setItem('tfi_openai_key', keyInput.value); } catch(e) {}
+          if (savedNote) savedNote.classList.add('visible');
+        }
+      });
+      saveCb.addEventListener('change', function() {
+        if (saveCb.checked && keyInput.value.startsWith('sk-')) {
+          try { localStorage.setItem('tfi_openai_key', keyInput.value); } catch(e) {}
+          if (savedNote) savedNote.classList.add('visible');
+        } else if (!saveCb.checked) {
+          try { localStorage.removeItem('tfi_openai_key'); } catch(e) {}
+          if (savedNote) savedNote.classList.remove('visible');
+        }
       });
     }
 
@@ -550,7 +580,12 @@ class TheFeedIngest extends HTMLElement {
       return;
     }
     if (!apiKey || !apiKey.startsWith('sk-')) {
-      this._showStatus('error', 'An OpenAI API key (sk-\u2026) is required. Click the key icon above to enter it.');
+      // Make the key row visible so the user knows where to enter it
+      var kr = this._shadow.getElementById('tfi-key-row');
+      var kt = this._shadow.getElementById('tfi-key-toggle');
+      if (kr) kr.classList.add('visible');
+      if (kt) kt.textContent = '🔑 Hide key';
+      this._showStatus('error', 'An OpenAI API key (sk-\u2026) is required \u2014 see above.');
       return;
     }
 
@@ -610,6 +645,35 @@ class TheFeedIngest extends HTMLElement {
     } finally {
       submitBtn.disabled = false;
     }
+  }
+
+  _renderKeySection() {
+    // If api-key attribute is set, the host has provided a server-side or hardcoded key.
+    // Hide the key section entirely — no need to prompt the user.
+    if (this._apiKey) return '';
+
+    // Check localStorage for a previously saved key
+    var saved = '';
+    try { saved = localStorage.getItem('tfi_openai_key') ?? ''; } catch(e) {}
+
+    var hasSaved = saved.startsWith('sk-');
+
+    // If user has a saved key: show a collapsed toggle with a "key on file" hint.
+    // If no saved key: show the toggle expanded so they know they need to act.
+    var toggleText = hasSaved ? '🔑 OpenAI key saved — click to change' : '🔑 Enter your OpenAI API key to submit';
+    var rowVisible  = hasSaved ? '' : ' visible';
+
+    return '<div class="tfi-key-section">' +
+      '<button class="tfi-key-toggle" id="tfi-key-toggle" type="button">' + toggleText + '</button>' +
+      '<div class="tfi-key-row' + rowVisible + '" id="tfi-key-row">' +
+        '<input type="password" id="tfi-api-key" placeholder="sk-..." autocomplete="off" spellcheck="false" value="' + this._escHtml(saved) + '">' +
+        '<label class="tfi-key-save-row">' +
+          '<input type="checkbox" id="tfi-key-save"' + (hasSaved ? ' checked' : '') + '>' +
+          'Save key in this browser (never sent to anyone except OpenAI)' +
+        '</label>' +
+        '<div class="tfi-key-saved-note' + (hasSaved ? ' visible' : '') + '" id="tfi-key-saved-note">\u2713 Key saved in this browser</div>' +
+      '</div>' +
+    '</div>';
   }
 
   _showStatus(type, message) {
