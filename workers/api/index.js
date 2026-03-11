@@ -91,15 +91,14 @@ export default {
  * Uses the Cloudflare CDN cache with a configurable TTL.
  */
 async function fetchLedger(env, ctx) {
-  const cdnBase = env.FEED_CDN_BASE ?? "https://raw.githubusercontent.com";
-  const owner = env.GITHUB_OWNER;
-  const repo = env.GITHUB_REPO;
+  const owner  = env.GITHUB_OWNER;
+  const repo   = env.GITHUB_REPO;
   const branch = env.GITHUB_PRODUCTION_BRANCH ?? "main";
 
-  // Fetch the index file which lists all event IDs
-  const indexUrl = `${cdnBase}/${owner}/${repo}/${branch}/ledger/events/production/index.json`;
+  // Public repo — no auth needed for raw content
+  const indexUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/ledger/events/production/index.json`;
 
-  const cache = caches.default;
+  const cache    = caches.default;
   const cacheKey = new Request(indexUrl);
   let cachedIndex = await cache.match(cacheKey).catch(() => null);
 
@@ -107,67 +106,49 @@ async function fetchLedger(env, ctx) {
   if (cachedIndex) {
     index = await cachedIndex.json();
   } else {
-    const res = await fetch(indexUrl, {
-      headers: env.GITHUB_TOKEN
-        ? { Authorization: `Bearer ${env.GITHUB_TOKEN}` }
-        : {},
-    });
+    const res = await fetch(indexUrl);
     if (!res.ok) {
-      // Return empty ledger gracefully rather than throwing
       if (res.status === 404) return [];
       throw new Error(`Ledger index fetch failed: ${res.status}`);
     }
     index = await res.json();
 
-    // Cache the index for TTL (best-effort)
     try {
-      const cacheRes = new Response(JSON.stringify(index), {
-        headers: { "Cache-Control": `public, max-age=300` },
-      });
-      ctx.waitUntil(cache.put(cacheKey, cacheRes));
+      ctx.waitUntil(cache.put(cacheKey,
+        new Response(JSON.stringify(index), { headers: { "Cache-Control": "public, max-age=60" } })
+      ));
     } catch (_) {}
   }
 
   if (!Array.isArray(index?.events) || index.events.length === 0) return [];
 
-  // Fetch each event file concurrently
   const events = await Promise.all(
     index.events.map((id) => fetchEventById(id, env, ctx, branch))
   );
-
   return events.filter(Boolean);
 }
 
 async function fetchEventById(id, env, ctx, branch) {
-  const cdnBase = env.FEED_CDN_BASE ?? "https://raw.githubusercontent.com";
   const owner = env.GITHUB_OWNER;
-  const repo = env.GITHUB_REPO;
-  const b = branch ?? env.GITHUB_PRODUCTION_BRANCH ?? "main";
+  const repo  = env.GITHUB_REPO;
+  const b     = branch ?? env.GITHUB_PRODUCTION_BRANCH ?? "main";
 
-  const url = `${cdnBase}/${owner}/${repo}/${b}/ledger/events/production/${id}.json`;
-  const cache = caches.default;
+  // Public repo — no auth needed
+  const url      = `https://raw.githubusercontent.com/${owner}/${repo}/${b}/ledger/events/production/${id}.json`;
+  const cache    = caches.default;
   const cacheKey = new Request(url);
 
   let cached = await cache.match(cacheKey).catch(() => null);
   if (cached) return cached.json();
 
-  const res = await fetch(url, {
-    headers: env.GITHUB_TOKEN
-      ? { Authorization: `Bearer ${env.GITHUB_TOKEN}` }
-      : {},
-  });
+  const res = await fetch(url);
   if (!res.ok) return null;
 
   const event = await res.json();
   try {
-    ctx.waitUntil(
-      cache.put(
-        cacheKey,
-        new Response(JSON.stringify(event), {
-          headers: { "Cache-Control": "public, max-age=300" },
-        })
-      )
-    );
+    ctx.waitUntil(cache.put(cacheKey,
+      new Response(JSON.stringify(event), { headers: { "Cache-Control": "public, max-age=60" } })
+    ));
   } catch (_) {}
   return event;
 }

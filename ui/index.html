@@ -321,10 +321,18 @@
     }
     .pub-card:hover { border-color: rgba(255,255,255,0.14); transform: translateY(-2px); }
     .pub-card-icon {
-      font-size: 1.75rem;
+      width: 36px;
+      height: 36px;
       margin-bottom: 0.875rem;
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-dim);
+      border-radius: 9px;
+      color: var(--accent);
+      flex-shrink: 0;
     }
+    .pub-card-icon svg { width: 18px; height: 18px; }
     .pub-card h3 {
       font-size: 1rem;
       font-weight: 700;
@@ -628,7 +636,8 @@
 <section class="hero">
   <div class="wrap">
     <div class="hero-eyebrow">
-      <span>📡</span> Open Event Protocol
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></svg>
+      Open Event Protocol
     </div>
     <h1>Submit a show once.<br><em>Syndicate everywhere.</em></h1>
     <p class="hero-sub">
@@ -775,32 +784,32 @@
 
     <div class="pub-cards">
       <div class="pub-card">
-        <span class="pub-card-icon">📣</span>
+        <span class="pub-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></span>
         <h3>Promoters &amp; Labels</h3>
         <p>Provision a source token via the admin API and your submissions commit directly — no review queue, full trust score. Register your OpenAI key server-side so it's never exposed to end users.</p>
       </div>
       <div class="pub-card">
-        <span class="pub-card-icon">🎪</span>
+        <span class="pub-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
         <h3>Venues</h3>
         <p>Embed the submission widget on your site. Anyone can submit shows directly from your event page — submissions route through your token and your brand.</p>
       </div>
       <div class="pub-card">
-        <span class="pub-card-icon">🎤</span>
+        <span class="pub-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M9 15l-3 6m6-6v6m3-6l3 6"/></svg></span>
         <h3>Performers &amp; Managers</h3>
         <p>Submit your own shows directly. A verified token ties your submissions to your name — no middleman, no waiting for a venue to post it for you.</p>
       </div>
       <div class="pub-card">
-        <span class="pub-card-icon">📅</span>
+        <span class="pub-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
         <h3>Calendar Publishers</h3>
         <p>Embed <code>&lt;the-feed-calendar&gt;</code> on any page for a fully skinnable event listing. Users toggle between mosaic, list, week, and month views — no backend required.</p>
       </div>
       <div class="pub-card">
-        <span class="pub-card-icon">🔧</span>
+        <span class="pub-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg></span>
         <h3>WordPress</h3>
         <p>The Feed ships with a native WordPress plugin — shortcode builder, NLP quick-parse metabox, and automatic syndication on publish.</p>
       </div>
       <div class="pub-card">
-        <span class="pub-card-icon">🧱</span>
+        <span class="pub-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
         <h3>No-code builders</h3>
         <p>Weebly, Squarespace, Wix, Showit and similar builders block custom scripts but allow <code>&lt;iframe&gt;</code> embeds. Use the hosted embed URL — no JavaScript permissions needed.</p>
       </div>
@@ -837,7 +846,7 @@
             </div>
             <pre id="ingest-code"><span class="cmt">&lt;!-- 1. Load the component --&gt;</span>
 <span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"module"</span>
-  <span class="attr">src</span>=<span class="str">"https://the-feed-ui.pages.dev/the-feed-ingest.js"</span>
+  <span class="attr">src</span>=<span class="str">"https://cdn.jsdelivr.net/gh/Stephanada/the-feed@main/ui/the-feed-ingest.js"</span>
 <span class="tag">&gt;&lt;/script&gt;</span>
 
 <span class="cmt">&lt;!-- 2. Drop the element --&gt;</span>
@@ -897,7 +906,7 @@
               </label>
             </div>
             <pre id="cal-code"><span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"module"</span>
-  <span class="attr">src</span>=<span class="str">"https://the-feed-ui.pages.dev/the-feed-calendar.js"</span>
+  <span class="attr">src</span>=<span class="str">"https://cdn.jsdelivr.net/gh/Stephanada/the-feed@main/ui/the-feed-calendar.js"</span>
 <span class="tag">&gt;&lt;/script&gt;</span>
 
 <span class="tag">&lt;the-feed-calendar</span>
@@ -1029,7 +1038,7 @@ curl -X POST https://the-feed-ingest.stephan-99b.workers.dev/admin/tokens \
 
 <span class="cmt">&lt;!-- Or use the event display component --&gt;</span>
 <span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"module"</span>
-  <span class="attr">src</span>=<span class="str">"https://the-feed-ui.pages.dev/the-feed-event.js"</span>
+  <span class="attr">src</span>=<span class="str">"https://cdn.jsdelivr.net/gh/Stephanada/the-feed@main/ui/the-feed-event.js"</span>
 <span class="tag">&gt;&lt;/script&gt;</span>
 
 <span class="tag">&lt;the-feed-event</span>
@@ -1133,7 +1142,7 @@ GET /api/feed.json?venue=The+Fillmore&amp;limit=20</span></pre>
     document.getElementById('ingest-code').innerHTML =
       `<span class="cmt">&lt;!-- 1. Load the component --&gt;</span>\n` +
       `<span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"module"</span>\n` +
-      `  <span class="attr">src</span>=<span class="str">"https://the-feed-ui.pages.dev/the-feed-ingest.js"</span>\n` +
+      `  <span class="attr">src</span>=<span class="str">"https://cdn.jsdelivr.net/gh/Stephanada/the-feed@main/ui/the-feed-ingest.js"</span>\n` +
       `<span class="tag">&gt;&lt;/script&gt;</span>\n\n` +
       `<span class="cmt">&lt;!-- 2. Drop the element --&gt;</span>\n` +
       `<span class="tag">&lt;the-feed-ingest</span>\n` +
@@ -1155,7 +1164,7 @@ GET /api/feed.json?venue=The+Fillmore&amp;limit=20</span></pre>
     // Update code snippet
     let code =
       `<span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"module"</span>\n` +
-      `  <span class="attr">src</span>=<span class="str">"https://the-feed-ui.pages.dev/the-feed-calendar.js"</span>\n` +
+      `  <span class="attr">src</span>=<span class="str">"https://cdn.jsdelivr.net/gh/Stephanada/the-feed@main/ui/the-feed-calendar.js"</span>\n` +
       `<span class="tag">&gt;&lt;/script&gt;</span>\n\n` +
       `<span class="tag">&lt;the-feed-calendar</span>\n` +
       `  <span class="attr">skin</span>=<span class="str">"${skin}"</span>\n` +
