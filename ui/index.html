@@ -725,12 +725,18 @@
         <h3>WordPress</h3>
         <p>The Feed ships with a native WordPress plugin — shortcode builder, NLP quick-parse metabox, and automatic syndication on publish.</p>
       </div>
+      <div class="pub-card">
+        <span class="pub-card-icon">🧱</span>
+        <h3>No-code builders</h3>
+        <p>Weebly, Squarespace, Wix, Showit and similar builders block custom scripts but allow <code>&lt;iframe&gt;</code> embeds. Use the hosted embed URL — no JavaScript permissions needed.</p>
+      </div>
     </div>
 
     <div class="embed-box">
       <div class="embed-tabs">
         <button class="embed-tab active" onclick="showTab('basic', this)">Submit widget</button>
         <button class="embed-tab" onclick="showTab('calendar', this)">Calendar</button>
+        <button class="embed-tab" onclick="showTab('nocode', this)">No-code / iframe</button>
         <button class="embed-tab" onclick="showTab('verified', this)">Verified source</button>
         <button class="embed-tab" onclick="showTab('org', this)">Org shared key</button>
         <button class="embed-tab" onclick="showTab('consume', this)">Raw feed</button>
@@ -780,6 +786,62 @@
   <span class="attr">views</span>=<span class="str">"week,month"</span>
 <span class="tag">&gt;&lt;/the-feed-calendar&gt;</span></pre>
         <button class="copy-btn" onclick="copyCode('tab-calendar')">Copy snippet</button>
+      </div>
+
+      <div id="tab-nocode" class="embed-pane">
+        <pre><span class="cmt">&lt;!-- ─────────────────────────────────────────────────────────────
+  No-code / iframe embed — works on Weebly, Squarespace, Wix,
+  Showit, or any builder that accepts HTML/iframe blocks but
+  blocks &lt;script type="module"&gt;.
+
+  The hosted embed.html page loads the component for you.
+  Paste this into an "HTML block" or "Embed code" widget.
+────────────────────────────────────────────────────────────── --&gt;</span>
+
+<span class="cmt">&lt;!-- Submit widget (ingest) --&gt;</span>
+<span class="tag">&lt;iframe</span>
+  <span class="attr">src</span>=<span class="str">"https://thefeed.site/embed.html?mode=ingest&amp;skin=broadcast"</span>
+  <span class="attr">width</span>=<span class="str">"100%"</span>
+  <span class="attr">height</span>=<span class="str">"420"</span>
+  <span class="attr">style</span>=<span class="str">"border:none;border-radius:12px;"</span>
+  <span class="attr">loading</span>=<span class="str">"lazy"</span>
+  <span class="attr">title</span>=<span class="str">"Submit an event"</span>
+<span class="tag">&gt;&lt;/iframe&gt;</span>
+
+<span class="cmt">&lt;!-- Event calendar (mosaic default, all 4 views) --&gt;</span>
+<span class="tag">&lt;iframe</span>
+  <span class="attr">src</span>=<span class="str">"https://thefeed.site/embed.html?mode=calendar&amp;skin=default&amp;view=mosaic"</span>
+  <span class="attr">width</span>=<span class="str">"100%"</span>
+  <span class="attr">height</span>=<span class="str">"600"</span>
+  <span class="attr">style</span>=<span class="str">"border:none;border-radius:12px;"</span>
+  <span class="attr">loading</span>=<span class="str">"lazy"</span>
+  <span class="attr">title</span>=<span class="str">"Event calendar"</span>
+<span class="tag">&gt;&lt;/iframe&gt;</span>
+
+<span class="cmt">&lt;!-- Token-scoped calendar — only your events, dark skin --&gt;</span>
+<span class="tag">&lt;iframe</span>
+  <span class="attr">src</span>=<span class="str">"https://thefeed.site/embed.html?mode=calendar&amp;token=your-token&amp;skin=poster&amp;view=list&amp;colormode=dark"</span>
+  <span class="attr">width</span>=<span class="str">"100%"</span>
+  <span class="attr">height</span>=<span class="str">"600"</span>
+  <span class="attr">style</span>=<span class="str">"border:none;border-radius:12px;"</span>
+  <span class="attr">loading</span>=<span class="str">"lazy"</span>
+  <span class="attr">title</span>=<span class="str">"My events"</span>
+<span class="tag">&gt;&lt;/iframe&gt;</span>
+
+<span class="cmt">&lt;!-- URL params reference:
+  mode       = ingest | calendar          (default: ingest)
+  skin       = default | broadcast | poster | https://...  (default: default)
+  token      = your-source-token          (optional)
+  group      = group-slug                 (optional)
+  venue      = "Venue Name"               (calendar only)
+  performer  = "Artist Name"              (calendar only)
+  genre      = rock | jazz | …            (optional)
+  view       = mosaic | list | week | month  (calendar, default: mosaic)
+  views      = comma list, e.g. list,week,month  (limits toggle buttons)
+  colormode  = light | dark | auto        (default: auto)
+  limit      = 50                         (default: 50)
+--&gt;</span></pre>
+        <button class="copy-btn" onclick="copyCode('tab-nocode')">Copy snippet</button>
       </div>
 
       <div id="tab-verified" class="embed-pane">

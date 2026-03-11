@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Feed — Embed</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background: transparent;
+      display: flex;
+      align-items: flex-start;
+      justify-content: stretch;
+    }
+    the-feed-ingest,
+    the-feed-calendar {
+      width: 100%;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<script type="module">
+  // ── Parse URL params ──────────────────────────────────────────────
+  const p = new URLSearchParams(location.search);
+
+  const mode      = p.get('mode')      || 'ingest';   // 'ingest' | 'calendar'
+  const skin      = p.get('skin')      || 'default';
+  const token     = p.get('token')     || '';
+  const group     = p.get('group')     || '';
+  const venue     = p.get('venue')     || '';
+  const performer = p.get('performer') || '';
+  const genre     = p.get('genre')     || '';
+  const view      = p.get('view')      || 'mosaic';
+  const views     = p.get('views')     || '';
+  const colorMode = p.get('colormode') || 'auto';
+  const limit     = p.get('limit')     || '';
+  const api       = p.get('api')       || 'https://the-feed-api.stephan-99b.workers.dev';
+  const ingestApi = p.get('ingest')    || 'https://the-feed-ingest.stephan-99b.workers.dev';
+
+  // ── CDN base for components ───────────────────────────────────────
+  const CDN = 'https://cdn.jsdelivr.net/gh/Stephanada/the-feed@main/ui';
+
+  // ── Load the right component ──────────────────────────────────────
+  const script = document.createElement('script');
+  script.type  = 'module';
+
+  if (mode === 'calendar') {
+    script.src = `${CDN}/the-feed-calendar.js`;
+    document.head.appendChild(script);
+
+    script.onload = () => {
+      const el = document.createElement('the-feed-calendar');
+      if (api)       el.setAttribute('api', api);
+      if (token)     el.setAttribute('token', token);
+      if (group)     el.setAttribute('group', group);
+      if (venue)     el.setAttribute('venue', venue);
+      if (performer) el.setAttribute('performer', performer);
+      if (genre)     el.setAttribute('genre', genre);
+      if (limit)     el.setAttribute('limit', limit);
+      if (skin)      el.setAttribute('skin', skin);
+      if (view)      el.setAttribute('view', view);
+      if (views)     el.setAttribute('views', views);
+      if (colorMode) el.setAttribute('mode', colorMode);
+      document.body.appendChild(el);
+    };
+  } else {
+    // default: ingest widget
+    script.src = `${CDN}/the-feed-ingest.js`;
+    document.head.appendChild(script);
+
+    script.onload = () => {
+      const el = document.createElement('the-feed-ingest');
+      if (ingestApi) el.setAttribute('api', ingestApi);
+      if (token)     el.setAttribute('token', token);
+      if (group)     el.setAttribute('group', group);
+      if (skin)      el.setAttribute('skin', skin);
+      if (colorMode) el.setAttribute('mode', colorMode);
+      document.body.appendChild(el);
+    };
+  }
+</script>
+</body>
+</html>
