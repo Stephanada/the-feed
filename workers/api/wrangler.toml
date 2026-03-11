@@ -9,8 +9,8 @@ compatibility_flags = ["nodejs_compat"]
 # ]
 
 [vars]
-GITHUB_OWNER = "your-github-org"
-GITHUB_REPO = "the-feed-ledger"
+GITHUB_OWNER = "Stephanada"
+GITHUB_REPO = "the-feed"
 GITHUB_PRODUCTION_BRANCH = "main"
 GITHUB_STAGING_BRANCH = "staging"
 FEED_CDN_BASE = "https://raw.githubusercontent.com"

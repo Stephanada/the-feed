@@ -2,15 +2,13 @@ name = "the-feed-ingest"
 main = "index.js"
 compatibility_date = "2026-03-01"
 
-# KV namespace for source token registry
-# Create with: wrangler kv:namespace create SOURCE_TOKENS_KV
-# kv_namespaces = [
-#   { binding = "SOURCE_TOKENS_KV", id = "YOUR_KV_NAMESPACE_ID" }
-# ]
+kv_namespaces = [
+  { binding = "SOURCE_TOKENS_KV", id = "c01bf86f689b42d79123ee945c70a710" }
+]
 
 [vars]
-GITHUB_OWNER = "your-github-org"
-GITHUB_REPO = "the-feed-ledger"
+GITHUB_OWNER = "Stephanada"
+GITHUB_REPO = "the-feed"
 GITHUB_PRODUCTION_BRANCH = "main"
 GITHUB_STAGING_BRANCH = "staging"
 ALLOWED_ORIGINS = "https://vistaradio.ca,https://madeandplayedincanada.com,http://localhost:3000"
