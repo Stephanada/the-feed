@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Feed — Open Event Protocol for Canadian Community Media</title>
-  <meta name="description" content="The Feed is an open, headless event syndication protocol for Canadian community radio, venues, and independent media. No platform. No lock-in. One submission, everywhere.">
+  <title>The Feed — Open Event Syndication Protocol</title>
+  <meta name="description" content="The Feed is an open, headless event syndication protocol for venues, artists, and independent media. No platform. No lock-in. One submission, everywhere.">
   <meta property="og:title" content="The Feed — Open Event Protocol">
-  <meta property="og:description" content="Submit a show once. Syndicate everywhere. Built for Canadian community media.">
+  <meta property="og:description" content="Submit a show once. Syndicate everywhere. Open protocol for event publishers.">
   <meta property="og:type" content="website">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -579,12 +579,12 @@
 <section class="hero">
   <div class="wrap">
     <div class="hero-eyebrow">
-      <span>📡</span> Open Event Protocol · Canadian Community Media
+      <span>📡</span> Open Event Protocol
     </div>
     <h1>Submit a show once.<br><em>Syndicate everywhere.</em></h1>
     <p class="hero-sub">
-      The Feed is a headless, open-source event protocol that connects venues, artists, and radio stations
-      across Canada — no platform, no lock-in, no forms.
+      The Feed is a headless, open-source event protocol that connects venues, artists, and publishers —
+      no platform, no lock-in, no forms.
     </p>
     <div class="hero-actions">
       <a href="#try" class="btn-primary">
@@ -597,24 +597,6 @@
     </div>
   </div>
 </section>
-
-<!-- ════════════════════════ NETWORK STRIP ═══════════════════════ -->
-<div class="network-strip">
-  <div class="wrap">
-    <p>Powering event discovery across the network</p>
-    <div class="network-logos">
-      <span class="network-logo">Vista Radio</span>
-      <span class="network-dot"></span>
-      <span class="network-logo">CFBX · Kamloops</span>
-      <span class="network-dot"></span>
-      <span class="network-logo">CKOV · Kelowna</span>
-      <span class="network-dot"></span>
-      <span class="network-logo">Made&amp;PlayedInCanada.com</span>
-      <span class="network-dot"></span>
-      <span class="network-logo">Your Station</span>
-    </div>
-  </div>
-</div>
 
 <!-- ════════════════════════ HOW IT WORKS ════════════════════════ -->
 <section id="how">
@@ -653,7 +635,7 @@
             <div class="step-num">4</div>
             <div class="step-content">
               <h4>Consumed anywhere, in any format</h4>
-              <p>Stations and sites pull the live feed as JSON-LD, RSS, .ics, or embed the <code>&lt;the-feed-event&gt;</code> web component directly.</p>
+              <p>Publishers and sites pull the live feed as JSON-LD, RSS, .ics, or embed the <code>&lt;the-feed-event&gt;</code> web component directly.</p>
             </div>
           </div>
         </div>
@@ -667,25 +649,25 @@
   <span class="attr">"@context"</span>: <span class="val">"https://schema.org"</span>,
   <span class="attr">"@type"</span>:    <span class="val">"Event"</span>,
   <span class="attr">"@id"</span>:     <span class="val">"evt_3f7a2b..."</span>,
-  <span class="attr">"name"</span>:    <span class="val">"The Trews — Live in Kamloops"</span>,
-  <span class="attr">"startDate"</span>: <span class="val">"2026-04-17T20:00:00-07:00"</span>,
+  <span class="attr">"name"</span>:    <span class="val">"The Trews — Live in Concert"</span>,
+  <span class="attr">"startDate"</span>: <span class="val">"2026-04-17T20:00:00-05:00"</span>,
   <span class="attr">"location"</span>: {
     <span class="attr">"@type"</span>: <span class="val">"Place"</span>,
-    <span class="attr">"name"</span>:  <span class="val">"Commodore Ballroom"</span>,
+    <span class="attr">"name"</span>:  <span class="val">"The Commodore"</span>,
     <span class="attr">"address"</span>: {
-      <span class="attr">"addressLocality"</span>: <span class="val">"Vancouver"</span>,
-      <span class="attr">"addressRegion"</span>:   <span class="val">"BC"</span>,
-      <span class="attr">"addressCountry"</span>:  <span class="val">"CA"</span>
+      <span class="attr">"addressLocality"</span>: <span class="val">"Nashville"</span>,
+      <span class="attr">"addressRegion"</span>:   <span class="val">"TN"</span>,
+      <span class="attr">"addressCountry"</span>:  <span class="val">"US"</span>
     }
   },
   <span class="attr">"performer"</span>: [{ <span class="attr">"name"</span>: <span class="val">"The Trews"</span> }],
   <span class="attr">"offers"</span>: [{
     <span class="attr">"price"</span>: <span class="val">35</span>,
-    <span class="attr">"priceCurrency"</span>: <span class="val">"CAD"</span>
+    <span class="attr">"priceCurrency"</span>: <span class="val">"USD"</span>
   }],
   <span class="attr">"_feed"</span>: {
     <span class="attr">"trustScore"</span>: <span class="val">95</span>,
-    <span class="attr">"source"</span>: <span class="val">"vista_radio_kamloops"</span>,
+    <span class="attr">"source"</span>: <span class="val">"verified_venue"</span>,
     <span class="attr">"brandSafe"</span>: <span class="val">true</span>
   }
 }</pre>
@@ -702,7 +684,6 @@
       <div class="demo-wrap">
         <the-feed-ingest
           api="https://the-feed-ingest.stephan-99b.workers.dev"
-          location-hint="Canada"
           skin="default"
           mode="dark"
         ></the-feed-ingest>
@@ -717,7 +698,7 @@
         <h2 class="section-title">Try The Feed<br>right now.</h2>
         <div class="section-body">
           <p>Paste a URL to any event listing — Bandsintown, Eventbrite, a venue website, a Facebook event — and watch it get extracted into a structured schema.org event in seconds.</p>
-          <p>Or just describe a show in plain English. "The Beaches at the Phoenix in Toronto, Saturday April 18, doors 8pm, $30 advance."</p>
+          <p>Or just describe a show in plain English. "Soccer Mommy at the Ryman in Nashville, Saturday April 18, doors 8pm, $30 advance."</p>
           <p>Public submissions go to editorial review. <a href="#embed">Get a verified source token</a> for direct commits.</p>
         </div>
         <div class="skins-grid" style="margin-top:2rem;">
@@ -750,9 +731,9 @@
 
     <div class="pub-cards">
       <div class="pub-card">
-        <span class="pub-card-icon">📻</span>
-        <h3>Radio Stations</h3>
-        <p>A verified source token means your PD's submissions commit directly — no review queue, full trust score. Your key is stored server-side so listeners never see it.</p>
+        <span class="pub-card-icon">�</span>
+        <h3>Publishers &amp; Media</h3>
+        <p>A verified source token means your submissions commit directly — no review queue, full trust score. Your key is stored server-side so readers never see it.</p>
       </div>
       <div class="pub-card">
         <span class="pub-card-icon">🎪</span>
@@ -787,7 +768,7 @@
 
 <span class="cmt">&lt;!-- 2. Drop the element --&gt;</span>
 <span class="tag">&lt;the-feed-ingest</span>
-  <span class="attr">location-hint</span>=<span class="str">"Kamloops, BC"</span>
+  <span class="attr">location-hint</span>=<span class="str">"Nashville, TN"</span>
   <span class="attr">skin</span>=<span class="str">"broadcast"</span>
 <span class="tag">&gt;&lt;/the-feed-ingest&gt;</span>
 
@@ -802,7 +783,7 @@
 
 <span class="tag">&lt;the-feed-ingest</span>
   <span class="attr">token</span>=<span class="str">"your-source-token"</span>
-  <span class="attr">location-hint</span>=<span class="str">"Kamloops, BC"</span>
+  <span class="attr">location-hint</span>=<span class="str">"Nashville, TN"</span>
   <span class="attr">skin</span>=<span class="str">"broadcast"</span>
 <span class="tag">&gt;&lt;/the-feed-ingest&gt;</span>
 
@@ -812,9 +793,9 @@ curl -X POST https://the-feed-ingest.stephan-99b.workers.dev/admin/tokens \
   -H "Content-Type: application/json" \
   -d '{
     "token":           "your-source-token",
-    "name":            "CFBX Kamloops",
+    "name":            "Blue Note Chicago",
     "sourceAuthority": "verified_venue",
-    "locationHint":    "Kamloops, BC, Canada",
+    "locationHint":    "Chicago, IL",
     "openaiKey":       "sk-..."
   }' --&gt;</span></pre>
         <button class="copy-btn" onclick="copyCode('tab-verified')">Copy snippet</button>
@@ -826,10 +807,10 @@ curl -X POST https://the-feed-ingest.stephan-99b.workers.dev/admin/tokens \
      no per-page configuration needed. --&gt;</span>
 
 <span class="cmt">&lt;!-- Page 1: venue homepage --&gt;</span>
-<span class="tag">&lt;the-feed-ingest</span> <span class="attr">token</span>=<span class="str">"org-token"</span> <span class="attr">location-hint</span>=<span class="str">"Vancouver"</span><span class="tag">&gt;&lt;/the-feed-ingest&gt;</span>
+<span class="tag">&lt;the-feed-ingest</span> <span class="attr">token</span>=<span class="str">"org-token"</span> <span class="attr">location-hint</span>=<span class="str">"Nashville"</span><span class="tag">&gt;&lt;/the-feed-ingest&gt;</span>
 
-<span class="cmt">&lt;!-- Page 2: radio station show submission form --&gt;</span>
-<span class="tag">&lt;the-feed-ingest</span> <span class="attr">token</span>=<span class="str">"org-token"</span> <span class="attr">location-hint</span>=<span class="str">"Kelowna"</span><span class="tag">&gt;&lt;/the-feed-ingest&gt;</span>
+<span class="cmt">&lt;!-- Page 2: events submission form --&gt;</span>
+<span class="tag">&lt;the-feed-ingest</span> <span class="attr">token</span>=<span class="str">"org-token"</span> <span class="attr">location-hint</span>=<span class="str">"Chicago"</span><span class="tag">&gt;&lt;/the-feed-ingest&gt;</span>
 
 <span class="cmt">&lt;!-- Page 3: partner venue --&gt;</span>
 <span class="tag">&lt;the-feed-ingest</span> <span class="attr">token</span>=<span class="str">"org-token"</span> <span class="attr">skin</span>=<span class="str">"poster"</span><span class="tag">&gt;&lt;/the-feed-ingest&gt;</span>
@@ -846,7 +827,7 @@ curl -X POST https://the-feed-ingest.stephan-99b.workers.dev/admin/tokens \
 
 <span class="cmt">// Filter by city</span>
 <span class="kw">const</span> local  = events.filter(e =>
-  e.location?.address?.addressLocality === <span class="str">'Kamloops'</span>
+  e.location?.address?.addressLocality === <span class="str">'Nashville'</span>
 );
 
 <span class="cmt">&lt;!-- Or use the event display component --&gt;</span>
@@ -862,7 +843,7 @@ curl -X POST https://the-feed-ingest.stephan-99b.workers.dev/admin/tokens \
 <span class="cmt">&lt;!-- RSS / iCal --&gt;
 GET /api/feed.rss
 GET /api/feed.ics
-GET /api/feed.json?city=Kamloops&amp;limit=20</span></pre>
+GET /api/feed.json?city=Nashville&amp;limit=20</span></pre>
         <button class="copy-btn" onclick="copyCode('tab-consume')">Copy snippet</button>
       </div>
     </div>
@@ -909,10 +890,10 @@ GET /api/feed.json?city=Kamloops&amp;limit=20</span></pre>
 <!-- ═══════════════════════════ CTA ══════════════════════════════ -->
 <div class="wrap">
   <div class="cta-strip">
-    <h2>Get your station on The Feed.</h2>
-    <p>Request a verified source token for your station or venue and go live in minutes — no code required.</p>
+    <h2>Get your venue on The Feed.</h2>
+    <p>Request a verified source token for your organization and go live in minutes — no code required.</p>
     <div class="cta-actions">
-      <a href="mailto:thefeed@vistaradio.ca?subject=Source Token Request&body=Station/org name:%0ALocation:%0AWebsite:" class="btn-primary">
+      <a href="mailto:thefeed@vistaradio.ca?subject=Source Token Request&body=Org name:%0ALocation:%0AWebsite:" class="btn-primary">
         Request a token →
       </a>
       <a href="https://github.com/Stephanada/the-feed" target="_blank" rel="noopener" class="btn-ghost">
@@ -932,7 +913,7 @@ GET /api/feed.json?city=Kamloops&amp;limit=20</span></pre>
       <li><a href="https://github.com/Stephanada/the-feed/blob/main/docs/DATA_STANDARD.md" target="_blank" rel="noopener">Data Standard</a></li>
       <li><a href="https://github.com/Stephanada/the-feed/blob/main/docs/CONTRIBUTING.md" target="_blank" rel="noopener">Contributing</a></li>
     </ul>
-    <span class="footer-credit">Built for Canadian community media · MIT License</span>
+    <span class="footer-credit">Open Event Protocol · MIT License</span>
   </div>
 </footer>
 
