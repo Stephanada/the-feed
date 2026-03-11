@@ -55,7 +55,7 @@
 import { ingestRaw } from './ingest.js';
 import { resolveSourceToken } from './token-registry.js';
 
-const ALLOWED_METHODS = ['POST', 'OPTIONS'];
+const ALLOWED_METHODS = ['GET', 'POST', 'OPTIONS'];
 
 export default {
   async fetch(request, env, ctx) {
