@@ -14,7 +14,7 @@ GITHUB_REPO = "the-feed"
 GITHUB_PRODUCTION_BRANCH = "main"
 GITHUB_STAGING_BRANCH = "staging"
 FEED_CDN_BASE = "https://raw.githubusercontent.com"
-ALLOWED_ORIGINS = "https://vistaradio.ca,https://madeandplayedincanada.com,http://localhost:3000"
+ALLOWED_ORIGINS = "https://thefeed.site,https://the-feed-ui.pages.dev,http://localhost:3000"
 
 # Secrets set via: wrangler secret put GITHUB_TOKEN
 # [secrets]
