@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Feed — Open Event Syndication Protocol</title>
-  <meta name="description" content="The Feed is an open, headless event syndication protocol for venues, artists, and independent media. No platform. No lock-in. One submission, everywhere.">
+  <meta name="description" content="The Feed is an open, headless event syndication protocol for performers, promoters, and venues. No platform. No lock-in. One submission, everywhere.">
   <meta property="og:title" content="The Feed — Open Event Protocol">
-  <meta property="og:description" content="Submit a show once. Syndicate everywhere. Open protocol for event publishers.">
+  <meta property="og:description" content="Submit a show once. Syndicate everywhere. Open protocol for the live music industry.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://thefeed.site">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -213,44 +214,6 @@
       text-decoration: none;
     }
     .btn-ghost:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.15); text-decoration: none; transform: translateY(-1px); }
-
-    /* ── Network strip ────────────────────────────────────── */
-    .network-strip {
-      padding: 1.5rem 0;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      text-align: center;
-    }
-    .network-strip p {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-dim);
-      margin-bottom: 1rem;
-    }
-    .network-logos {
-      display: flex;
-      gap: 2rem;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .network-logo {
-      font-size: 0.8125rem;
-      font-weight: 700;
-      color: var(--text-mid);
-      opacity: 0.55;
-      letter-spacing: 0.04em;
-      transition: opacity 0.15s;
-    }
-    .network-logo:hover { opacity: 0.9; }
-    .network-dot {
-      width: 4px;
-      height: 4px;
-      background: var(--text-dim);
-      border-radius: 50%;
-      opacity: 0.3;
-    }
 
     /* ── Section chrome ───────────────────────────────────── */
     section { padding: 5rem 0; }
@@ -583,7 +546,7 @@
     </div>
     <h1>Submit a show once.<br><em>Syndicate everywhere.</em></h1>
     <p class="hero-sub">
-      The Feed is a headless, open-source event protocol that connects venues, artists, and publishers —
+      The Feed is a headless, open-source event protocol that connects performers, promoters, and venues —
       no platform, no lock-in, no forms.
     </p>
     <div class="hero-actions">
@@ -621,7 +584,7 @@
             <div class="step-num">2</div>
             <div class="step-content">
               <h4>AI extracts the structured event</h4>
-              <p>The Eventizer runs brand-safety checks, resolves relative dates, normalizes venue and artist names to schema.org/Event.</p>
+              <p>The Eventizer runs brand-safety checks, resolves relative dates, normalizes performer and venue names to schema.org/Event.</p>
             </div>
           </div>
           <div class="step">
@@ -649,16 +612,11 @@
   <span class="attr">"@context"</span>: <span class="val">"https://schema.org"</span>,
   <span class="attr">"@type"</span>:    <span class="val">"Event"</span>,
   <span class="attr">"@id"</span>:     <span class="val">"evt_3f7a2b..."</span>,
-  <span class="attr">"name"</span>:    <span class="val">"The Trews — Live in Concert"</span>,
-  <span class="attr">"startDate"</span>: <span class="val">"2026-04-17T20:00:00-05:00"</span>,
+  <span class="attr">"name"</span>:    <span class="val">"The Trews — Live"</span>,
+  <span class="attr">"startDate"</span>: <span class="val">"2026-04-17T20:00:00"</span>,
   <span class="attr">"location"</span>: {
     <span class="attr">"@type"</span>: <span class="val">"Place"</span>,
-    <span class="attr">"name"</span>:  <span class="val">"The Commodore"</span>,
-    <span class="attr">"address"</span>: {
-      <span class="attr">"addressLocality"</span>: <span class="val">"Nashville"</span>,
-      <span class="attr">"addressRegion"</span>:   <span class="val">"TN"</span>,
-      <span class="attr">"addressCountry"</span>:  <span class="val">"US"</span>
-    }
+    <span class="attr">"name"</span>:  <span class="val">"The Fillmore"</span>
   },
   <span class="attr">"performer"</span>: [{ <span class="attr">"name"</span>: <span class="val">"The Trews"</span> }],
   <span class="attr">"offers"</span>: [{
@@ -698,7 +656,7 @@
         <h2 class="section-title">Try The Feed<br>right now.</h2>
         <div class="section-body">
           <p>Paste a URL to any event listing — Bandsintown, Eventbrite, a venue website, a Facebook event — and watch it get extracted into a structured schema.org event in seconds.</p>
-          <p>Or just describe a show in plain English. "Soccer Mommy at the Ryman in Nashville, Saturday April 18, doors 8pm, $30 advance."</p>
+          <p>Or just describe a show in plain English. "Soccer Mommy at The Fillmore, Saturday April 18, doors 8pm, $30 advance."</p>
           <p>Public submissions go to editorial review. <a href="#embed">Get a verified source token</a> for direct commits.</p>
         </div>
         <div class="skins-grid" style="margin-top:2rem;">
@@ -710,7 +668,7 @@
           <div class="skin-chip" data-skin="broadcast" onclick="setSkin(this)">
             <div class="skin-swatch" style="background:linear-gradient(90deg,#00b4d8,#00b4d877);"></div>
             <h4>Broadcast</h4>
-            <p>Dark, monospace, radio-station energy.</p>
+            <p>Dark, monospace, broadcast energy.</p>
           </div>
           <div class="skin-chip" data-skin="poster" onclick="setSkin(this)">
             <div class="skin-swatch" style="background:linear-gradient(90deg,#ff3c00,#ff3c0077);"></div>
@@ -726,14 +684,14 @@
 <!-- ══════════════════════════ EMBED ══════════════════════════════ -->
 <section id="embed">
   <div class="wrap">
-    <span class="section-label">For publishers &amp; venues</span>
+    <span class="section-label">For promoters, venues &amp; performers</span>
     <h2 class="section-title" style="max-width:580px;">Put The Feed on<br>your site in <em>two lines.</em></h2>
 
     <div class="pub-cards">
       <div class="pub-card">
-        <span class="pub-card-icon">�</span>
-        <h3>Publishers &amp; Media</h3>
-        <p>A verified source token means your submissions commit directly — no review queue, full trust score. Your key is stored server-side so readers never see it.</p>
+        <span class="pub-card-icon">📣</span>
+        <h3>Promoters &amp; Labels</h3>
+        <p>A verified source token means your submissions commit directly — no review queue, full trust score. Your key is stored server-side so fans never see it.</p>
       </div>
       <div class="pub-card">
         <span class="pub-card-icon">🎪</span>
@@ -741,9 +699,9 @@
         <p>Embed the widget on your site. Anyone can submit shows directly from your event page. Submissions route through your token and your brand.</p>
       </div>
       <div class="pub-card">
-        <span class="pub-card-icon">🗞️</span>
-        <h3>Independent Media</h3>
-        <p>Pull the live JSON-LD feed, subscribe to the RSS, or use the <code>&lt;the-feed-event&gt;</code> component to render event cards directly from the ledger.</p>
+        <span class="pub-card-icon">🎤</span>
+        <h3>Performers &amp; Managers</h3>
+        <p>Submit your own shows directly. A verified token ties your submissions to your name — no middleman, no waiting for a venue to post it for you.</p>
       </div>
       <div class="pub-card">
         <span class="pub-card-icon">🔧</span>
@@ -768,7 +726,6 @@
 
 <span class="cmt">&lt;!-- 2. Drop the element --&gt;</span>
 <span class="tag">&lt;the-feed-ingest</span>
-  <span class="attr">location-hint</span>=<span class="str">"Nashville, TN"</span>
   <span class="attr">skin</span>=<span class="str">"broadcast"</span>
 <span class="tag">&gt;&lt;/the-feed-ingest&gt;</span>
 
@@ -783,7 +740,6 @@
 
 <span class="tag">&lt;the-feed-ingest</span>
   <span class="attr">token</span>=<span class="str">"your-source-token"</span>
-  <span class="attr">location-hint</span>=<span class="str">"Nashville, TN"</span>
   <span class="attr">skin</span>=<span class="str">"broadcast"</span>
 <span class="tag">&gt;&lt;/the-feed-ingest&gt;</span>
 
@@ -793,9 +749,8 @@ curl -X POST https://the-feed-ingest.stephan-99b.workers.dev/admin/tokens \
   -H "Content-Type: application/json" \
   -d '{
     "token":           "your-source-token",
-    "name":            "Blue Note Chicago",
+    "name":            "Blue Note",
     "sourceAuthority": "verified_venue",
-    "locationHint":    "Chicago, IL",
     "openaiKey":       "sk-..."
   }' --&gt;</span></pre>
         <button class="copy-btn" onclick="copyCode('tab-verified')">Copy snippet</button>
@@ -807,10 +762,10 @@ curl -X POST https://the-feed-ingest.stephan-99b.workers.dev/admin/tokens \
      no per-page configuration needed. --&gt;</span>
 
 <span class="cmt">&lt;!-- Page 1: venue homepage --&gt;</span>
-<span class="tag">&lt;the-feed-ingest</span> <span class="attr">token</span>=<span class="str">"org-token"</span> <span class="attr">location-hint</span>=<span class="str">"Nashville"</span><span class="tag">&gt;&lt;/the-feed-ingest&gt;</span>
+<span class="tag">&lt;the-feed-ingest</span> <span class="attr">token</span>=<span class="str">"org-token"</span><span class="tag">&gt;&lt;/the-feed-ingest&gt;</span>
 
 <span class="cmt">&lt;!-- Page 2: events submission form --&gt;</span>
-<span class="tag">&lt;the-feed-ingest</span> <span class="attr">token</span>=<span class="str">"org-token"</span> <span class="attr">location-hint</span>=<span class="str">"Chicago"</span><span class="tag">&gt;&lt;/the-feed-ingest&gt;</span>
+<span class="tag">&lt;the-feed-ingest</span> <span class="attr">token</span>=<span class="str">"org-token"</span> <span class="attr">skin</span>=<span class="str">"broadcast"</span><span class="tag">&gt;&lt;/the-feed-ingest&gt;</span>
 
 <span class="cmt">&lt;!-- Page 3: partner venue --&gt;</span>
 <span class="tag">&lt;the-feed-ingest</span> <span class="attr">token</span>=<span class="str">"org-token"</span> <span class="attr">skin</span>=<span class="str">"poster"</span><span class="tag">&gt;&lt;/the-feed-ingest&gt;</span>
@@ -825,9 +780,9 @@ curl -X POST https://the-feed-ingest.stephan-99b.workers.dev/admin/tokens \
 <span class="kw">const</span> res    = <span class="kw">await</span> fetch(<span class="str">'https://the-feed-api.stephan-99b.workers.dev/api/events'</span>);
 <span class="kw">const</span> events = <span class="kw">await</span> res.json();
 
-<span class="cmt">// Filter by city</span>
+<span class="cmt">// Filter by city (optional)</span>
 <span class="kw">const</span> local  = events.filter(e =>
-  e.location?.address?.addressLocality === <span class="str">'Nashville'</span>
+  e.location?.name === <span class="str">'The Fillmore'</span>
 );
 
 <span class="cmt">&lt;!-- Or use the event display component --&gt;</span>
@@ -843,7 +798,7 @@ curl -X POST https://the-feed-ingest.stephan-99b.workers.dev/admin/tokens \
 <span class="cmt">&lt;!-- RSS / iCal --&gt;
 GET /api/feed.rss
 GET /api/feed.ics
-GET /api/feed.json?city=Nashville&amp;limit=20</span></pre>
+GET /api/feed.json?venue=The+Fillmore&amp;limit=20</span></pre>
         <button class="copy-btn" onclick="copyCode('tab-consume')">Copy snippet</button>
       </div>
     </div>
@@ -890,10 +845,10 @@ GET /api/feed.json?city=Nashville&amp;limit=20</span></pre>
 <!-- ═══════════════════════════ CTA ══════════════════════════════ -->
 <div class="wrap">
   <div class="cta-strip">
-    <h2>Get your venue on The Feed.</h2>
-    <p>Request a verified source token for your organization and go live in minutes — no code required.</p>
+    <h2>Get on The Feed.</h2>
+    <p>Request a verified source token for your venue, org, or roster and go live in minutes — no code required.</p>
     <div class="cta-actions">
-      <a href="mailto:thefeed@vistaradio.ca?subject=Source Token Request&body=Org name:%0ALocation:%0AWebsite:" class="btn-primary">
+      <a href="mailto:hello@thefeed.site?subject=Source Token Request&body=Org name:%0AWebsite:" class="btn-primary">
         Request a token →
       </a>
       <a href="https://github.com/Stephanada/the-feed" target="_blank" rel="noopener" class="btn-ghost">
@@ -913,7 +868,7 @@ GET /api/feed.json?city=Nashville&amp;limit=20</span></pre>
       <li><a href="https://github.com/Stephanada/the-feed/blob/main/docs/DATA_STANDARD.md" target="_blank" rel="noopener">Data Standard</a></li>
       <li><a href="https://github.com/Stephanada/the-feed/blob/main/docs/CONTRIBUTING.md" target="_blank" rel="noopener">Contributing</a></li>
     </ul>
-    <span class="footer-credit">Open Event Protocol · MIT License</span>
+    <span class="footer-credit">thefeed.site · Open Event Protocol · MIT License</span>
   </div>
 </footer>
 
