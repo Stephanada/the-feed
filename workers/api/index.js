@@ -36,26 +36,26 @@ export default {
 
     // CORS preflight
     if (method === "OPTIONS") {
-      return corsResponse(new Response(null, { status: 204 }), env);
+      return corsResponse(new Response(null, { status: 204 }), env, request);
     }
 
     try {
       // Route matching
       if (path === "/api/health") {
-        return corsResponse(json({ status: "ok", ts: new Date().toISOString() }), env);
+        return corsResponse(json({ status: "ok", ts: new Date().toISOString() }), env, request);
       }
 
       if (path === "/api/rules" && method === "GET") {
-        return handleGetRules(env);
+        return handleGetRules(env, request);
       }
 
       if (path === "/api/events" && method === "GET") {
-        return handleGetEvents(url, env, ctx);
+        return handleGetEvents(url, env, ctx, request);
       }
 
       if (path.startsWith("/api/events/") && method === "GET") {
         const id = path.replace("/api/events/", "");
-        return handleGetEventById(id, env, ctx);
+        return handleGetEventById(id, env, ctx, request);
       }
 
       if (path === "/api/events/submit" && method === "POST") {
@@ -74,10 +74,10 @@ export default {
         return handleSyndicationXML(url, env, ctx);
       }
 
-      return corsResponse(json({ error: "Not Found" }, 404), env);
+      return corsResponse(json({ error: "Not Found" }, 404), env, request);
     } catch (err) {
       console.error("[The Feed] Unhandled error:", err);
-      return corsResponse(json({ error: "Internal Server Error", detail: err.message }, 500), env);
+      return corsResponse(json({ error: "Internal Server Error", detail: err.message }, 500), env, request);
     }
   },
 };
@@ -157,7 +157,7 @@ async function fetchEventById(id, env, ctx, branch) {
 // Route Handlers
 // ─────────────────────────────────────────────
 
-async function handleGetEvents(url, env, ctx) {
+async function handleGetEvents(url, env, ctx, request) {
   const params = url.searchParams;
   let events = await fetchLedger(env, ctx);
 
@@ -237,32 +237,33 @@ async function handleGetEvents(url, env, ctx) {
         "hasMore": offset + limit < total,
       },
     }),
-    env
+    env,
+    request
   );
 }
 
-async function handleGetEventById(id, env, ctx) {
+async function handleGetEventById(id, env, ctx, request) {
   if (!id.startsWith("evt_")) {
-    return corsResponse(json({ error: "Invalid event ID format. Must be evt_[sha256]" }, 400), env);
+    return corsResponse(json({ error: "Invalid event ID format. Must be evt_[sha256]" }, 400), env, request);
   }
 
   const event = await fetchEventById(id, env, ctx);
   if (!event) {
-    return corsResponse(json({ error: "Event not found", id }, 404), env);
+    return corsResponse(json({ error: "Event not found", id }, 404), env, request);
   }
 
-  return corsResponse(json(event), env);
+  return corsResponse(json(event), env, request);
 }
 
-async function handleGetRules(env) {
+async function handleGetRules(env, request) {
   const cdnBase = env.FEED_CDN_BASE ?? "https://raw.githubusercontent.com";
   const rulesUrl = `${cdnBase}/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/${env.GITHUB_PRODUCTION_BRANCH ?? "main"}/config/rules.json`;
   const res = await fetch(rulesUrl, {
     headers: { Authorization: `Bearer ${env.GITHUB_TOKEN}` },
   });
-  if (!res.ok) return corsResponse(json({ error: "Rules not found" }, 404), env);
+  if (!res.ok) return corsResponse(json({ error: "Rules not found" }, 404), env, request);
   const rules = await res.json();
-  return corsResponse(json(rules), env);
+  return corsResponse(json(rules), env, request);
 }
 
 async function handleSubmitEvent(request, env) {
@@ -273,7 +274,7 @@ async function handleSubmitEvent(request, env) {
   try {
     body = await request.json();
   } catch {
-    return corsResponse(json({ error: "Invalid JSON body" }, 400), env);
+    return corsResponse(json({ error: "Invalid JSON body" }, 400), env, request);
   }
 
   // Forward to NLP worker for validation + ID generation, then open a PR on staging
@@ -283,7 +284,8 @@ async function handleSubmitEvent(request, env) {
   if (!prResult.ok) {
     return corsResponse(
       json({ error: "Failed to create staging submission", detail: prResult.error }, 500),
-      env
+      env,
+      request
     );
   }
 
@@ -295,7 +297,8 @@ async function handleSubmitEvent(request, env) {
       submissionId: prResult.submissionId,
       prUrl: prResult.prUrl,
     }),
-    env
+    env,
+    request
   );
 }
 
@@ -412,7 +415,8 @@ async function handleSyndicationICS(url, env, ctx) {
         "Cache-Control": "public, max-age=300",
       },
     }),
-    env
+    env,
+    null
   );
 }
 
@@ -426,7 +430,8 @@ async function handleSyndicationRSS(url, env, ctx) {
         "Cache-Control": "public, max-age=300",
       },
     }),
-    env
+    env,
+    null
   );
 }
 
@@ -440,7 +445,8 @@ async function handleSyndicationXML(url, env, ctx) {
         "Cache-Control": "public, max-age=300",
       },
     }),
-    env
+    env,
+    null
   );
 }
 
@@ -661,10 +667,16 @@ function json(data, status = 200) {
   });
 }
 
-function corsResponse(response, env) {
-  const allowedOrigins = (env.ALLOWED_ORIGINS ?? "*").split(",");
+function corsResponse(response, env, request) {
+  const allowedOrigins = (env.ALLOWED_ORIGINS ?? "*").split(",").map(s => s.trim());
+  const origin = request?.headers?.get("Origin") ?? "";
+  const isAllowed =
+    allowedOrigins.includes("*") ||
+    allowedOrigins.includes(origin) ||
+    /^https:\/\/[a-z0-9]+([-a-z0-9]*[a-z0-9])?\.the-feed-ui\.pages\.dev$/.test(origin);
+  const allowOrigin = isAllowed ? origin : (allowedOrigins[0] ?? "*");
   const headers = new Headers(response.headers);
-  headers.set("Access-Control-Allow-Origin", allowedOrigins[0] ?? "*");
+  headers.set("Access-Control-Allow-Origin", allowOrigin);
   headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   headers.set("Access-Control-Allow-Headers", "Content-Type, X-Api-Key");
   headers.set("Vary", "Origin");

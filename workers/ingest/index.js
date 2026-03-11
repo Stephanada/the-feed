@@ -73,27 +73,27 @@ export default {
     const url = new URL(request.url);
 
     if (request.method === 'OPTIONS') {
-      return cors(new Response(null, { status: 204 }), env);
+      return cors(new Response(null, { status: 204 }), env, request);
     }
 
     if (!ALLOWED_METHODS.includes(request.method)) {
-      return cors(json({ error: 'Method not allowed' }, 405), env);
+      return cors(json({ error: 'Method not allowed' }, 405), env, request);
     }
 
     if (url.pathname === '/ingest/raw') {
-      return cors(await handleIngestRaw(request, env, ctx), env);
+      return cors(await handleIngestRaw(request, env, ctx), env, request);
     }
 
     if (url.pathname === '/ingest/health') {
-      return cors(json({ status: 'ok', ts: new Date().toISOString() }), env);
+      return cors(json({ status: 'ok', ts: new Date().toISOString() }), env, request);
     }
 
     // ── Admin: token management (protected by ADMIN_SECRET)
     if (url.pathname === '/admin/tokens') {
-      return cors(await handleAdminTokens(request, env), env);
+      return cors(await handleAdminTokens(request, env), env, request);
     }
 
-    return cors(json({ error: 'Not found' }, 404), env);
+    return cors(json({ error: 'Not found' }, 404), env, request);
   },
 };
 
@@ -290,12 +290,19 @@ function json(data, status = 200) {
   });
 }
 
-function cors(response, env) {
-  const origins = (env?.ALLOWED_ORIGINS ?? '*').split(',');
+function cors(response, env, request) {
+  const origins = (env?.ALLOWED_ORIGINS ?? '*').split(',').map(s => s.trim());
+  const origin = request?.headers?.get('Origin') ?? '';
+  const isAllowed =
+    origins.includes('*') ||
+    origins.includes(origin) ||
+    /^https:\/\/[a-z0-9]+([-a-z0-9]*[a-z0-9])?\.the-feed-ui\.pages\.dev$/.test(origin);
+  const allowOrigin = isAllowed ? origin : (origins[0] ?? '*');
   const h = new Headers(response.headers);
-  h.set('Access-Control-Allow-Origin', origins[0] ?? '*');
+  h.set('Access-Control-Allow-Origin', allowOrigin);
   h.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
   h.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Api-Key');
+  h.set('Vary', 'Origin');
   h.set('X-Powered-By', 'The Feed — Open Event Protocol');
   return new Response(response.body, { status: response.status, headers: h });
 }
