@@ -9,6 +9,9 @@
   <meta property="og:description" content="Submit a show once. Syndicate everywhere. Open protocol for the live music industry.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://thefeed.site">
+  <meta property="og:image" content="https://thefeed.site/feed-icon.svg">
+  <link rel="icon" type="image/svg+xml" href="./feed-icon.svg">
+  <link rel="apple-touch-icon" href="./feed-icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -91,13 +94,14 @@
     .nav-logo-mark {
       width: 28px;
       height: 28px;
-      background: var(--accent);
-      border-radius: 7px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.9rem;
       flex-shrink: 0;
+    }
+    .nav-logo-mark svg {
+      width: 16px;
+      height: 28px;
     }
     .nav-links {
       display: flex;
@@ -500,6 +504,14 @@
       font-weight: 700;
       font-size: 0.875rem;
       color: var(--text-mid);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .footer-logo svg {
+      width: 10px;
+      height: 17px;
+      flex-shrink: 0;
     }
     .footer-links {
       display: flex;
@@ -524,7 +536,7 @@
 <nav>
   <div class="nav-inner">
     <a href="#" class="nav-logo">
-      <span class="nav-logo-mark">🎵</span>
+      <span class="nav-logo-mark"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 302.72 522.95" aria-hidden="true"><g fill="#e94560"><rect y="356.36" width="133.17" height="22.1"/><rect y="460.3" width="133.17" height="22.1"/><rect y="408.33" width="133.17" height="22.1"/><polygon points="0 200.45 0 201.38 0 222.56 244.79 222.56 244.79 201.38 133.17 201.38 133.17 200.45 0 200.45"/><rect y="304.39" width="244.79" height="22.1"/><polygon points="302.72 14.68 302.72 0 133.17 0 0 0 0 14.68 302.72 14.68"/><rect y="252.42" width="244.79" height="22.1"/><rect y="44.54" width="302.72" height="22.1"/><rect y="512.27" width="133.17" height="10.67"/><rect y="148.48" width="133.17" height="22.1"/><rect y="96.51" width="302.72" height="22.1"/></g></svg></span>
       The Feed
     </a>
     <ul class="nav-links">
@@ -898,7 +910,7 @@ GET /api/feed.json?venue=The+Fillmore&amp;limit=20</span></pre>
 <!-- ════════════════════════ FOOTER ══════════════════════════════ -->
 <footer>
   <div class="footer-inner">
-    <span class="footer-logo">🎵 The Feed — Open Event Protocol</span>
+    <span class="footer-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 302.72 522.95" aria-hidden="true"><g fill="#e94560"><rect y="356.36" width="133.17" height="22.1"/><rect y="460.3" width="133.17" height="22.1"/><rect y="408.33" width="133.17" height="22.1"/><polygon points="0 200.45 0 201.38 0 222.56 244.79 222.56 244.79 201.38 133.17 201.38 133.17 200.45 0 200.45"/><rect y="304.39" width="244.79" height="22.1"/><polygon points="302.72 14.68 302.72 0 133.17 0 0 0 0 14.68 302.72 14.68"/><rect y="252.42" width="244.79" height="22.1"/><rect y="44.54" width="302.72" height="22.1"/><rect y="512.27" width="133.17" height="10.67"/><rect y="148.48" width="133.17" height="22.1"/><rect y="96.51" width="302.72" height="22.1"/></g></svg> The Feed — Open Event Protocol</span>
     <ul class="footer-links">
       <li><a href="https://github.com/Stephanada/the-feed" target="_blank" rel="noopener">GitHub</a></li>
       <li><a href="https://github.com/Stephanada/the-feed/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener">Architecture</a></li>
