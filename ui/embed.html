@@ -39,15 +39,15 @@
   const api       = p.get('api')       || 'https://the-feed-api.stephan-99b.workers.dev';
   const ingestApi = p.get('ingest')    || 'https://the-feed-ingest.stephan-99b.workers.dev';
 
-  // ── CDN base for components ───────────────────────────────────────
-  const CDN = 'https://cdn.jsdelivr.net/gh/Stephanada/the-feed@main/ui';
+  // ── Component base — same origin as this page ────────────────────
+  const CDN = '';
 
   // ── Load the right component ──────────────────────────────────────
   const script = document.createElement('script');
   script.type  = 'module';
 
   if (mode === 'calendar') {
-    script.src = `${CDN}/the-feed-calendar.js`;
+    script.src = `./the-feed-calendar.js`;
     document.head.appendChild(script);
 
     script.onload = () => {
@@ -67,7 +67,7 @@
     };
   } else {
     // default: ingest widget
-    script.src = `${CDN}/the-feed-ingest.js`;
+    script.src = `./the-feed-ingest.js`;
     document.head.appendChild(script);
 
     script.onload = () => {
