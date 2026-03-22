@@ -8,7 +8,11 @@
   "endDate": "2026-04-05T21:00:00-07:00",
   "eventStatus": "https://schema.org/EventScheduled",
   "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-  "genre": ["acoustic", "folk", "singer-songwriter"],
+  "genre": [
+    "acoustic",
+    "folk",
+    "singer-songwriter"
+  ],
   "location": {
     "@type": "Place",
     "name": "Rockwater Secret Cove Resort",
@@ -27,8 +31,14 @@
     }
   },
   "performer": [
-    { "@type": "Person", "name": "Mara Doyle" },
-    { "@type": "Person", "name": "Sam River" }
+    {
+      "@type": "Person",
+      "name": "Mara Doyle"
+    },
+    {
+      "@type": "Person",
+      "name": "Sam River"
+    }
   ],
   "offers": {
     "@type": "Offer",
@@ -40,9 +50,11 @@
   "_feed": {
     "sourceToken": "demo",
     "sourceAuthority": "verified_venue",
-    "trustScore": 0.90,
-    "targetGroup": "sunshine-coast",
+    "trustScore": 0.9,
     "scope": "local",
-    "submittedAt": "2026-03-22T00:00:00Z"
+    "submittedAt": "2026-03-22T00:00:00Z",
+    "targetGroups": [
+      "sunshine-coast"
+    ]
   }
 }

@@ -90,6 +90,7 @@ export default {
  * Fetches all production events from the GitHub-hosted ledger.
  * Uses the Cloudflare CDN cache with a configurable TTL.
  */
+// cache-bust: 2026-03-22
 async function fetchLedger(env, ctx) {
   const owner  = env.GITHUB_OWNER;
   const repo   = env.GITHUB_REPO;

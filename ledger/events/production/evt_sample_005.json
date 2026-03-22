@@ -9,7 +9,10 @@
   "doorTime": "2026-04-11T19:30:00-07:00",
   "eventStatus": "https://schema.org/EventScheduled",
   "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-  "genre": ["country", "classic rock"],
+  "genre": [
+    "country",
+    "classic rock"
+  ],
   "location": {
     "@type": "Place",
     "name": "Royal Canadian Legion Branch 109",
@@ -24,7 +27,7 @@
     "geo": {
       "@type": "GeoCoordinates",
       "latitude": 49.4041,
-      "longitude": -123.5100
+      "longitude": -123.51
     }
   },
   "performer": [
@@ -43,9 +46,11 @@
   "_feed": {
     "sourceToken": "demo",
     "sourceAuthority": "verified_venue",
-    "trustScore": 0.90,
-    "targetGroup": "sunshine-coast",
+    "trustScore": 0.9,
     "scope": "local",
-    "submittedAt": "2026-03-22T00:00:00Z"
+    "submittedAt": "2026-03-22T00:00:00Z",
+    "targetGroups": [
+      "sunshine-coast"
+    ]
   }
 }

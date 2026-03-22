@@ -9,7 +9,11 @@
   "doorTime": "2026-04-10T19:00:00-07:00",
   "eventStatus": "https://schema.org/EventScheduled",
   "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-  "genre": ["celtic", "folk", "traditional"],
+  "genre": [
+    "celtic",
+    "folk",
+    "traditional"
+  ],
   "location": {
     "@type": "Place",
     "name": "Port Theatre",
@@ -28,8 +32,14 @@
     }
   },
   "performer": [
-    { "@type": "MusicGroup", "name": "The Reel McKinnons" },
-    { "@type": "MusicGroup", "name": "Isla & the Wanderers" }
+    {
+      "@type": "MusicGroup",
+      "name": "The Reel McKinnons"
+    },
+    {
+      "@type": "MusicGroup",
+      "name": "Isla & the Wanderers"
+    }
   ],
   "offers": {
     "@type": "Offer",
@@ -41,9 +51,11 @@
   "_feed": {
     "sourceToken": "demo",
     "sourceAuthority": "verified_venue",
-    "trustScore": 0.90,
-    "targetGroup": "nanaimo",
+    "trustScore": 0.9,
     "scope": "local",
-    "submittedAt": "2026-03-22T00:00:00Z"
+    "submittedAt": "2026-03-22T00:00:00Z",
+    "targetGroups": [
+      "nanaimo"
+    ]
   }
 }
