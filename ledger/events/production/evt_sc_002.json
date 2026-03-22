@@ -1,44 +1,43 @@
 {
   "@context": "https://schema.org",
   "@type": "Event",
-  "@id": "evt_sample_003",
-  "name": "Persephone: Grant Olsen",
-  "description": "<p>Grant Olsen house act playing feel good classics, live in the tasting room, no cover charge.</p>",
-  "startDate": "2026-03-22T15:00:00-07:00",
-  "endDate": "2026-03-22T17:00:00-07:00",
+  "@id": "evt_sc_002",
+  "name": "Salt & Swine: Sewing Drop In",
+  "description": "<p>Get together and sew with other 2SLGBTQIA+ creatives and allies. The first 5 people to sign up receive a 20 minute tutorial from Jaskamal. This is a great opportunity to […]</p>",
+  "startDate": "2026-03-23T18:30:00-07:00",
+  "endDate": "2026-03-23T21:30:00-07:00",
   "eventStatus": "https://schema.org/EventScheduled",
   "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-  "url": "https://coastculture.com/event/persephone-grant-olsen/",
-  "image": "https://coastculture.com/wp-content/uploads/2023/02/Grant-Olsen-no-date-2.jpg",
+  "url": "https://coastculture.com/event/salt-swine-sewing-drop-in/",
+  "image": "https://coastculture.com/wp-content/uploads/2025/11/Salt-and-Swine-Mar-23.jpg",
   "location": {
     "@type": "Place",
-    "name": "Persephone Brewing",
-    "url": "http://www.persephonebrewing.com",
+    "name": "Salt & Swine",
+    "url": "https://eatsaltandswine.ca/",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "1053 Stewart Rd",
+      "streetAddress": "747 North Rd",
       "addressLocality": "Gibsons",
       "addressRegion": "BC",
-      "postalCode": "V0N 1V7",
       "addressCountry": "CA"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": 49.4207548,
-      "longitude": -123.5081931
+      "latitude": 49.4101349,
+      "longitude": -123.514332
     },
-    "telephone": ""
+    "telephone": "604-741-4016"
   },
   "organizer": {
     "@type": "Organization",
-    "name": "Persephone Brewing"
+    "name": "Salt & Swine"
   },
   "offers": {
     "@type": "Offer",
-    "price": "0",
+    "price": "20 – 30",
     "priceCurrency": "CAD",
     "availability": "https://schema.org/InStock",
-    "url": "https://coastculture.com/event/persephone-grant-olsen/"
+    "url": "https://coastculture.com/event/salt-swine-sewing-drop-in/"
   },
   "_feed": {
     "sourceToken": "coastculture-scrape",

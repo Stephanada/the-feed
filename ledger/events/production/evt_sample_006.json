@@ -2,55 +2,52 @@
   "@context": "https://schema.org",
   "@type": "Event",
   "@id": "evt_sample_006",
-  "name": "Sechelt Arts Centre — Spring Concert Series",
-  "description": "The Sechelt Community Band presents its annual spring program at The Raven's Cry Theatre. Featuring new arrangements and a premiere of a local composition. Tickets at the door or online.",
-  "startDate": "2026-04-19T19:00:00-07:00",
-  "endDate": "2026-04-19T21:30:00-07:00",
-  "doorTime": "2026-04-19T18:30:00-07:00",
+  "name": "Sunnycrest Mall: Spring Market",
+  "description": "<p>Mar 21 & 22. Make It • Bake It • Grow It and celebrate the season with the best of our local community. Browse handmade goods, fresh baking, homegrown plants, […]</p>",
+  "startDate": "2026-03-22T10:00:00-07:00",
+  "endDate": "2026-03-22T16:00:00-07:00",
   "eventStatus": "https://schema.org/EventScheduled",
   "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-  "genre": [
-    "classical",
-    "concert band"
-  ],
+  "url": "https://coastculture.com/event/sunnycrest-mall-spring-market/2026-03-22/",
+  "image": "https://coastculture.com/wp-content/uploads/2025/11/Spring-Market-Mar-22.jpg",
   "location": {
     "@type": "Place",
-    "name": "The Raven's Cry Theatre",
+    "name": "Sunnycrest Mall",
+    "url": "https://www.sunnycrestmall.com/",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "5559 Sunshine Coast Hwy",
-      "addressLocality": "Sechelt",
+      "streetAddress": "900 Gibsons Way",
+      "addressLocality": "Gibsons",
       "addressRegion": "BC",
-      "postalCode": "V0N 3A0",
+      "postalCode": "V0N 1V7",
       "addressCountry": "CA"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": 49.4736,
-      "longitude": -123.7547
-    }
+      "latitude": 49.4080203,
+      "longitude": -123.5191253
+    },
+    "telephone": ""
   },
-  "performer": [
-    {
-      "@type": "MusicGroup",
-      "name": "Sechelt Community Band"
-    }
-  ],
+  "organizer": {
+    "@type": "Organization",
+    "name": "Sunnycrest Mall"
+  },
   "offers": {
     "@type": "Offer",
-    "price": "18.00",
+    "price": "0",
     "priceCurrency": "CAD",
     "availability": "https://schema.org/InStock",
-    "url": "https://ravenscry.ca"
+    "url": "https://coastculture.com/event/sunnycrest-mall-spring-market/2026-03-22/"
   },
   "_feed": {
-    "sourceToken": "demo",
+    "sourceToken": "coastculture-scrape",
     "sourceAuthority": "verified_venue",
-    "trustScore": 0.9,
-    "scope": "local",
-    "submittedAt": "2026-03-22T00:00:00Z",
+    "trustScore": 0.85,
     "targetGroups": [
       "sunshine-coast"
-    ]
+    ],
+    "scope": "local",
+    "submittedAt": "2026-03-22T00:00:00Z"
   }
 }

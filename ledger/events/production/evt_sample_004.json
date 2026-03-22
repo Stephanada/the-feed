@@ -2,59 +2,52 @@
   "@context": "https://schema.org",
   "@type": "Event",
   "@id": "evt_sample_004",
-  "name": "Coast Roots Acoustic Sessions",
-  "description": "An intimate evening of original acoustic music at the Rockwater Secret Cove Resort. Local songwriters share new material around the fire. BYOB. Limited seating — reserve early.",
-  "startDate": "2026-04-05T18:00:00-07:00",
-  "endDate": "2026-04-05T21:00:00-07:00",
+  "name": "GPAG: SHOUT OUT! Sunshine Coast Youth Art Exhibition",
+  "description": "<p>Shout Out! features the work of over 100 Sunshine Coast youth aged two – 18. In addition to offering an inspiring body of work that represents the creativity of our […]</p>",
+  "startDate": "2026-03-22T11:00:00-07:00",
+  "endDate": "2026-03-22T16:00:00-07:00",
   "eventStatus": "https://schema.org/EventScheduled",
   "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-  "genre": [
-    "acoustic",
-    "folk",
-    "singer-songwriter"
-  ],
+  "url": "https://coastculture.com/event/gpag-shout-out-sunshine-coast-youth-art-exhibition/2026-03-22/",
+  "image": "https://coastculture.com/wp-content/uploads/2026/03/Copy-of-IMG_3143.jpeg",
   "location": {
     "@type": "Place",
-    "name": "Rockwater Secret Cove Resort",
+    "name": "Gibsons Public Art Gallery",
+    "url": "https://gpag.ca/",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "5356 Ole's Cove Rd",
-      "addressLocality": "Halfmoon Bay",
+      "streetAddress": "431 Marine Dr",
+      "addressLocality": "Gibsons",
       "addressRegion": "BC",
-      "postalCode": "V0N 1Y1",
+      "postalCode": "V0N 1V0",
       "addressCountry": "CA"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": 49.6143,
-      "longitude": -123.9075
-    }
-  },
-  "performer": [
-    {
-      "@type": "Person",
-      "name": "Mara Doyle"
+      "latitude": 49.4021949,
+      "longitude": -123.5048689
     },
-    {
-      "@type": "Person",
-      "name": "Sam River"
-    }
-  ],
+    "telephone": "604-886-0531"
+  },
+  "organizer": {
+    "@type": "Organization",
+    "name": "Gibsons Public Art Gallery"
+  },
   "offers": {
     "@type": "Offer",
-    "price": "15.00",
+    "price": "0",
     "priceCurrency": "CAD",
-    "availability": "https://schema.org/LimitedAvailability",
-    "url": "https://thefeed.site"
+    "availability": "https://schema.org/InStock",
+    "url": "https://coastculture.com/event/gpag-shout-out-sunshine-coast-youth-art-exhibition/2026-03-22/"
   },
   "_feed": {
-    "sourceToken": "demo",
+    "sourceToken": "coastculture-scrape",
     "sourceAuthority": "verified_venue",
-    "trustScore": 0.9,
-    "scope": "local",
-    "submittedAt": "2026-03-22T00:00:00Z",
+    "trustScore": 0.85,
     "targetGroups": [
       "sunshine-coast"
-    ]
+    ],
+    "scope": "local",
+    "submittedAt": "2026-03-22T00:00:00Z"
   }
 }

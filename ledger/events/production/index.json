@@ -1,55 +1,57 @@
 {
   "generatedAt": "2026-03-22T00:00:00Z",
-  "count": 6,
+  "count": 8,
   "events": [
     "evt_sample_001",
     "evt_sample_002",
     "evt_sample_003",
     "evt_sample_004",
     "evt_sample_005",
-    "evt_sample_006"
+    "evt_sample_006",
+    "evt_sc_001",
+    "evt_sc_002"
   ],
   "summary": [
     {
       "id": "evt_sample_001",
-      "name": "Friday Night Blues",
-      "startDate": "2026-04-03T21:00:00-07:00",
-      "location": "Nanaimo, BC",
+      "name": "Brickers Cidery: Afternoon of the Music of John Prine",
+      "startDate": "2026-03-22T14:00:00-07:00",
+      "location": "Sechelt, BC",
       "targetGroups": [
-        "nanaimo"
+        "sunshine-coast"
       ]
     },
     {
       "id": "evt_sample_002",
-      "name": "Nanaimo Celtic Festival — Opening Night",
-      "startDate": "2026-04-10T19:30:00-07:00",
-      "location": "Nanaimo, BC",
+      "name": "Madeira Park Legion: Sunday Afternoon Music – Magic Carpet Ride",
+      "startDate": "2026-03-22T14:00:00-07:00",
+      "location": "Madeira Park, BC",
       "targetGroups": [
-        "nanaimo"
+        "sunshine-coast"
       ]
     },
     {
       "id": "evt_sample_003",
-      "name": "Vinyl Night at The Queens",
-      "startDate": "2026-04-17T20:00:00-07:00",
-      "location": "Nanaimo, BC",
+      "name": "Persephone: Grant Olsen",
+      "startDate": "2026-03-22T15:00:00-07:00",
+      "location": "Gibsons, BC",
       "targetGroups": [
-        "nanaimo"
+        "sunshine-coast"
       ]
     },
     {
       "id": "evt_sample_004",
-      "name": "Coast Roots Acoustic Sessions",
-      "startDate": "2026-04-05T18:00:00-07:00",
-      "location": "Halfmoon Bay, BC",
+      "name": "GPAG: SHOUT OUT! Sunshine Coast Youth Art Exhibition",
+      "startDate": "2026-03-22T11:00:00-07:00",
+      "location": "Gibsons, BC",
       "targetGroups": [
         "sunshine-coast"
       ]
     },
     {
       "id": "evt_sample_005",
-      "name": "Gibsons Legion Saturday Dance",
-      "startDate": "2026-04-11T20:00:00-07:00",
+      "name": "Ambassadress: Bazzar Bazzar",
+      "startDate": "2026-03-22T11:00:00-07:00",
       "location": "Gibsons, BC",
       "targetGroups": [
         "sunshine-coast"
@@ -57,9 +59,27 @@
     },
     {
       "id": "evt_sample_006",
-      "name": "Sechelt Arts Centre — Spring Concert Series",
-      "startDate": "2026-04-19T19:00:00-07:00",
-      "location": "Sechelt, BC",
+      "name": "Sunnycrest Mall: Spring Market",
+      "startDate": "2026-03-22T10:00:00-07:00",
+      "location": "Gibsons, BC",
+      "targetGroups": [
+        "sunshine-coast"
+      ]
+    },
+    {
+      "id": "evt_sc_001",
+      "name": "Art Exhibition: Gumboot Cafe – Clare Wilkening",
+      "startDate": "2026-03-22T08:00:00-07:00",
+      "location": "Roberts Creek, BC",
+      "targetGroups": [
+        "sunshine-coast"
+      ]
+    },
+    {
+      "id": "evt_sc_002",
+      "name": "Salt & Swine: Sewing Drop In",
+      "startDate": "2026-03-23T18:30:00-07:00",
+      "location": "Gibsons, BC",
       "targetGroups": [
         "sunshine-coast"
       ]

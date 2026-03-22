@@ -2,55 +2,51 @@
   "@context": "https://schema.org",
   "@type": "Event",
   "@id": "evt_sample_001",
-  "name": "Friday Night Blues",
-  "description": "Local blues favourites take the stage at the Nanaimo Bar & Grill for a night of slide guitar, soul, and cold beer. All ages until 9pm.",
-  "startDate": "2026-04-03T21:00:00-07:00",
-  "endDate": "2026-04-03T23:30:00-07:00",
-  "doorTime": "2026-04-03T20:00:00-07:00",
+  "name": "Brickers Cidery: Afternoon of the Music of John Prine",
+  "description": "<p>Brought to you by the Sunshine Coast John Prine Society. If contributing a song is something you’d like to do please Email: ele_molnar@sunshine.net</p>",
+  "startDate": "2026-03-22T14:00:00-07:00",
+  "endDate": "2026-03-22T17:00:00-07:00",
   "eventStatus": "https://schema.org/EventScheduled",
   "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-  "genre": [
-    "blues",
-    "soul"
-  ],
+  "url": "https://coastculture.com/event/brickers-cidery-afternoon-of-the-music-of-john-prine/",
+  "image": "https://coastculture.com/wp-content/uploads/2024/01/Brickers-John-Prine-Mar-22.jpg",
   "location": {
     "@type": "Place",
-    "name": "Nanaimo Bar & Grill",
+    "name": "The Bricker Cider Company",
+    "url": "http://www.brickerscider.com/",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "321 Wesley St",
-      "addressLocality": "Nanaimo",
+      "streetAddress": "6642 Norwest Bay Rd",
+      "addressLocality": "Sechelt",
       "addressRegion": "BC",
-      "postalCode": "V9R 2T5",
       "addressCountry": "CA"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": 49.1659,
-      "longitude": -123.9401
-    }
+      "latitude": 49.4787758,
+      "longitude": -123.8099265
+    },
+    "telephone": "778-458-2443"
   },
-  "performer": [
-    {
-      "@type": "MusicGroup",
-      "name": "The Muddy Wheel Band"
-    }
-  ],
+  "organizer": {
+    "@type": "Organization",
+    "name": "The Bricker Cider Company"
+  },
   "offers": {
     "@type": "Offer",
-    "price": "12.00",
+    "price": "0",
     "priceCurrency": "CAD",
     "availability": "https://schema.org/InStock",
-    "url": "https://thefeed.site"
+    "url": "https://coastculture.com/event/brickers-cidery-afternoon-of-the-music-of-john-prine/"
   },
   "_feed": {
-    "sourceToken": "demo",
+    "sourceToken": "coastculture-scrape",
     "sourceAuthority": "verified_venue",
-    "trustScore": 0.9,
-    "scope": "local",
-    "submittedAt": "2026-03-22T00:00:00Z",
+    "trustScore": 0.85,
     "targetGroups": [
-      "nanaimo"
-    ]
+      "sunshine-coast"
+    ],
+    "scope": "local",
+    "submittedAt": "2026-03-22T00:00:00Z"
   }
 }
