@@ -1,13 +1,46 @@
 {
   "version": "1.0.0",
-  "updatedAt": "2026-03-10T00:00:00Z",
+  "updatedAt": "2026-03-22T00:00:00Z",
 
   "hubs": [
+    {
+      "id": "nanaimo",
+      "name": "Nanaimo, BC",
+      "feedEndpoint": "https://thefeed.site/api/events",
+      "scope": "local",
+      "geo": {
+        "city": "Nanaimo",
+        "region": "BC",
+        "country": "CA",
+        "lat": 49.1659,
+        "lng": -123.9401,
+        "radiusKm": 40
+      },
+      "targetGroup": "nanaimo",
+      "active": true
+    },
+    {
+      "id": "sunshine-coast",
+      "name": "Sunshine Coast, BC",
+      "feedEndpoint": "https://thefeed.site/api/events",
+      "scope": "local",
+      "geo": {
+        "city": "Sechelt",
+        "region": "BC",
+        "country": "CA",
+        "lat": 49.4736,
+        "lng": -123.7547,
+        "radiusKm": 80,
+        "communities": ["Sechelt", "Gibsons", "Roberts Creek", "Pender Harbour", "Egmont"]
+      },
+      "targetGroup": "sunshine-coast",
+      "active": true
+    },
     {
       "id": "vista-radio-kamloops",
       "name": "Vista Radio — Kamloops, BC",
       "domain": "kamloopsnow.com",
-      "feedEndpoint": "https://thefeed.pages.dev/api/events",
+      "feedEndpoint": "https://thefeed.site/api/events",
       "scope": "local",
       "geo": {
         "city": "Kamloops",
@@ -24,7 +57,7 @@
       "id": "vista-radio-kelowna",
       "name": "Vista Radio — Kelowna, BC",
       "domain": "kelownanow.com",
-      "feedEndpoint": "https://thefeed.pages.dev/api/events",
+      "feedEndpoint": "https://thefeed.site/api/events",
       "scope": "local",
       "geo": {
         "city": "Kelowna",
@@ -41,7 +74,7 @@
       "id": "vista-radio-prince-george",
       "name": "Vista Radio — Prince George, BC",
       "domain": "princegeorgenow.com",
-      "feedEndpoint": "https://thefeed.pages.dev/api/events",
+      "feedEndpoint": "https://thefeed.site/api/events",
       "scope": "local",
       "geo": {
         "city": "Prince George",
@@ -58,7 +91,7 @@
       "id": "vista-radio-bc",
       "name": "Vista Radio — British Columbia (Regional)",
       "domain": "vistaradio.ca",
-      "feedEndpoint": "https://thefeed.pages.dev/api/events",
+      "feedEndpoint": "https://thefeed.site/api/events",
       "scope": "regional",
       "geo": {
         "region": "BC",
@@ -71,7 +104,7 @@
       "id": "vista-radio-national",
       "name": "Vista Radio — National",
       "domain": "vistaradio.ca",
-      "feedEndpoint": "https://thefeed.pages.dev/api/events",
+      "feedEndpoint": "https://thefeed.site/api/events",
       "scope": "national",
       "geo": {
         "country": "CA"
@@ -83,7 +116,7 @@
       "id": "madeincanada",
       "name": "Made & Played in Canada",
       "domain": "madeandplayedincanada.com",
-      "feedEndpoint": "https://thefeed.pages.dev/api/events",
+      "feedEndpoint": "https://thefeed.site/api/events",
       "scope": "national",
       "geo": {
         "country": "CA"

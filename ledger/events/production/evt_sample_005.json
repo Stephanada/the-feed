@@ -1,43 +1,42 @@
 {
   "@context": "https://schema.org",
   "@type": "Event",
-  "@id": "evt_sample_003",
-  "name": "Vinyl Night at The Queens",
-  "description": "DJ Coastline spins rare pressings all night — soul, funk, reggae, and a few surprises. No cover before 9pm. Patio open weather permitting.",
-  "startDate": "2026-04-17T20:00:00-07:00",
-  "endDate": "2026-04-18T01:00:00-07:00",
-  "doorTime": "2026-04-17T20:00:00-07:00",
+  "@id": "evt_sample_005",
+  "name": "Gibsons Legion Saturday Dance",
+  "description": "The Sunshine Coast Ramblers play two sets of country, classic rock, and originals. $5 cover at the door. Kitchen open until 9pm. Open to members and guests.",
+  "startDate": "2026-04-11T20:00:00-07:00",
+  "endDate": "2026-04-11T23:30:00-07:00",
+  "doorTime": "2026-04-11T19:30:00-07:00",
   "eventStatus": "https://schema.org/EventScheduled",
   "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-  "genre": ["soul", "funk", "reggae", "DJ"],
+  "genre": ["country", "classic rock"],
   "location": {
     "@type": "Place",
-    "name": "The Queens Hotel",
+    "name": "Royal Canadian Legion Branch 109",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "34 Victoria Cres",
-      "addressLocality": "Nanaimo",
+      "streetAddress": "542 Shaw Rd",
+      "addressLocality": "Gibsons",
       "addressRegion": "BC",
-      "postalCode": "V9R 5B9",
+      "postalCode": "V0N 1V7",
       "addressCountry": "CA"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": 49.1659,
-      "longitude": -123.9396
+      "latitude": 49.4041,
+      "longitude": -123.5100
     }
   },
   "performer": [
     {
-      "@type": "Person",
-      "name": "DJ Coastline"
+      "@type": "MusicGroup",
+      "name": "The Sunshine Coast Ramblers"
     }
   ],
   "offers": {
     "@type": "Offer",
-    "price": "0.00",
+    "price": "5.00",
     "priceCurrency": "CAD",
-    "description": "Free before 9pm, $8 after",
     "availability": "https://schema.org/InStock",
     "url": "https://thefeed.site"
   },
@@ -45,7 +44,7 @@
     "sourceToken": "demo",
     "sourceAuthority": "verified_venue",
     "trustScore": 0.90,
-    "targetGroup": "nanaimo",
+    "targetGroup": "sunshine-coast",
     "scope": "local",
     "submittedAt": "2026-03-22T00:00:00Z"
   }

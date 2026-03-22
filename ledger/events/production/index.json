@@ -1,14 +1,20 @@
 {
-  "generatedAt": "2026-03-11T19:00:00Z",
-  "count": 3,
+  "generatedAt": "2026-03-22T00:00:00Z",
+  "count": 6,
   "events": [
     "evt_sample_001",
     "evt_sample_002",
-    "evt_sample_003"
+    "evt_sample_003",
+    "evt_sample_004",
+    "evt_sample_005",
+    "evt_sample_006"
   ],
   "summary": [
-    { "id": "evt_sample_001", "name": "The Feed — Demo Night", "startDate": "2026-04-12T20:00:00-04:00" },
-    { "id": "evt_sample_002", "name": "Jazz at the Venue", "startDate": "2026-04-18T19:30:00-04:00" },
-    { "id": "evt_sample_003", "name": "Electronic Night", "startDate": "2026-04-25T22:00:00-04:00" }
+    { "id": "evt_sample_001", "name": "Friday Night Blues", "startDate": "2026-04-03T21:00:00-07:00", "location": "Nanaimo, BC", "targetGroup": "nanaimo" },
+    { "id": "evt_sample_002", "name": "Nanaimo Celtic Festival — Opening Night", "startDate": "2026-04-10T19:30:00-07:00", "location": "Nanaimo, BC", "targetGroup": "nanaimo" },
+    { "id": "evt_sample_003", "name": "Vinyl Night at The Queens", "startDate": "2026-04-17T20:00:00-07:00", "location": "Nanaimo, BC", "targetGroup": "nanaimo" },
+    { "id": "evt_sample_004", "name": "Coast Roots Acoustic Sessions", "startDate": "2026-04-05T18:00:00-07:00", "location": "Halfmoon Bay, BC", "targetGroup": "sunshine-coast" },
+    { "id": "evt_sample_005", "name": "Gibsons Legion Saturday Dance", "startDate": "2026-04-11T20:00:00-07:00", "location": "Gibsons, BC", "targetGroup": "sunshine-coast" },
+    { "id": "evt_sample_006", "name": "Sechelt Arts Centre — Spring Concert Series", "startDate": "2026-04-19T19:00:00-07:00", "location": "Sechelt, BC", "targetGroup": "sunshine-coast" }
   ]
 }
