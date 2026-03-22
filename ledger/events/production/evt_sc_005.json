@@ -1,15 +1,15 @@
 {
   "@context": "https://schema.org",
   "@type": "Event",
-  "@id": "evt_sc_001",
-  "name": "RC Legion: Open Mic And Jam",
-  "description": "Every Wednesday. An event for anyone to come and showcase their talents. All styles welcome, whether it’s playing a tune, reading a poem, singing a song, or anything else. Come on along and join in on the fun!",
-  "startDate": "2026-03-25 19:00:00",
-  "endDate": "2026-03-25 19:00:00",
+  "@id": "evt_sc_005",
+  "name": "RC Legion: Celtic Night – Two Thistles",
+  "description": "Celtic trio featuring fiddle, guitar and bass.",
+  "startDate": "2026-03-26 19:00:00",
+  "endDate": "2026-03-26 19:00:00",
   "eventStatus": "https://schema.org/EventScheduled",
   "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-  "url": "https://coastculture.com/event/rc-legion-open-mic-and-jam/2026-03-25/",
-  "image": "https://coastculture.com/wp-content/uploads/2024/10/RC-Open-Mic-2025.jpg",
+  "url": "https://coastculture.com/event/rc-legion-celtic-night-two-thistles/",
+  "image": "https://coastculture.com/wp-content/uploads/2025/08/two-thistles-no-date.jpg",
   "location": {
     "@type": "Place",
     "name": "Roberts Creek Legion",
@@ -36,7 +36,7 @@
     "price": "0",
     "priceCurrency": "CAD",
     "availability": "https://schema.org/InStock",
-    "url": "https://coastculture.com/event/rc-legion-open-mic-and-jam/2026-03-25/"
+    "url": "https://coastculture.com/event/rc-legion-celtic-night-two-thistles/"
   },
   "_feed": {
     "sourceToken": "coastculture",

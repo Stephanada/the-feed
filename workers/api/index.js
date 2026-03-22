@@ -90,17 +90,18 @@ export default {
  * Fetches all production events from the GitHub-hosted ledger.
  * Uses the Cloudflare CDN cache with a configurable TTL.
  */
-// cache-bust: 2026-03-22
+// cache-bust: 2026-03-22c
 async function fetchLedger(env, ctx) {
   const owner  = env.GITHUB_OWNER;
   const repo   = env.GITHUB_REPO;
   const branch = env.GITHUB_PRODUCTION_BRANCH ?? "main";
+  const cv     = env.CACHE_VERSION ?? "1";
 
   // Public repo — no auth needed for raw content
   const indexUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/ledger/events/production/index.json`;
 
   const cache    = caches.default;
-  const cacheKey = new Request(indexUrl);
+  const cacheKey = new Request(`${indexUrl}?v=${cv}`);
   let cachedIndex = await cache.match(cacheKey).catch(() => null);
 
   let index;
@@ -133,11 +134,12 @@ async function fetchEventById(id, env, ctx, branch) {
   const owner = env.GITHUB_OWNER;
   const repo  = env.GITHUB_REPO;
   const b     = branch ?? env.GITHUB_PRODUCTION_BRANCH ?? "main";
+  const cv    = env.CACHE_VERSION ?? "1";
 
   // Public repo — no auth needed
   const url      = `https://raw.githubusercontent.com/${owner}/${repo}/${b}/ledger/events/production/${id}.json`;
   const cache    = caches.default;
-  const cacheKey = new Request(url);
+  const cacheKey = new Request(`${url}?v=${cv}`);
 
   let cached = await cache.match(cacheKey).catch(() => null);
   if (cached) return cached.json();
@@ -197,9 +199,18 @@ async function handleGetEvents(url, env, ctx, request) {
   if (before) events = events.filter((e) => new Date(e.startDate) <= before);
 
   // ── Filter: upcoming only (default behaviour unless past=true)
+  // Use end of the event's start day as the cutoff so same-day events remain visible
   if (params.get("past") !== "true") {
     const now = new Date();
-    events = events.filter((e) => new Date(e.startDate) >= now);
+    events = events.filter((e) => {
+      // prefer endDate if available, otherwise use end-of-day of startDate
+      const end = e.endDate ? new Date(e.endDate) : (() => {
+        const d = new Date(e.startDate);
+        d.setHours(23, 59, 59, 999);
+        return d;
+      })();
+      return end >= now;
+    });
   }
 
   // ── Filter: genre

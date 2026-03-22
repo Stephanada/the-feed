@@ -2,45 +2,44 @@
   "@context": "https://schema.org",
   "@type": "Event",
   "@id": "evt_sc_002",
-  "name": "Salt & Swine: Sewing Drop In",
-  "description": "<p>Get together and sew with other 2SLGBTQIA+ creatives and allies. The first 5 people to sign up receive a 20 minute tutorial from Jaskamal. This is a great opportunity to […]</p>",
-  "startDate": "2026-03-23T18:30:00-07:00",
-  "endDate": "2026-03-23T21:30:00-07:00",
+  "name": "SSAC: Ukulele Jam & Sing-Along",
+  "description": "Thursdays in the Craft Room. With Mark Trevis. \n \n All levels of experience are welcome. If you’ve never played before, don’t worry. The ukulele is not hard to learn and the group is very willing to help you along. And if you don’t have one, we’ll find one for you to use until you can get your own. ",
+  "startDate": "2026-03-26 11:15:00",
+  "endDate": "2026-03-26 12:45:00",
   "eventStatus": "https://schema.org/EventScheduled",
   "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-  "url": "https://coastculture.com/event/salt-swine-sewing-drop-in/",
-  "image": "https://coastculture.com/wp-content/uploads/2025/11/Salt-and-Swine-Mar-23.jpg",
+  "url": "https://coastculture.com/event/ssac-ukulele-jam-sing-along/2026-03-26/",
+  "image": "https://coastculture.com/wp-content/uploads/2025/01/Uke-thursdays.jpg",
   "location": {
     "@type": "Place",
-    "name": "Salt & Swine",
-    "url": "https://eatsaltandswine.ca/",
+    "name": "Sechelt Seniors Activity Centre",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "747 North Rd",
-      "addressLocality": "Gibsons",
+      "streetAddress": "5604 Trail Ave",
+      "addressLocality": "Sechelt",
       "addressRegion": "BC",
+      "postalCode": "V0N 3A3",
       "addressCountry": "CA"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": 49.4101349,
-      "longitude": -123.514332
-    },
-    "telephone": "604-741-4016"
+      "latitude": 49.475722,
+      "longitude": -123.7580715
+    }
   },
   "organizer": {
     "@type": "Organization",
-    "name": "Salt & Swine"
+    "name": "Sechelt Seniors Activity Centre"
   },
   "offers": {
     "@type": "Offer",
-    "price": "20 – 30",
+    "price": "4",
     "priceCurrency": "CAD",
     "availability": "https://schema.org/InStock",
-    "url": "https://coastculture.com/event/salt-swine-sewing-drop-in/"
+    "url": "https://coastculture.com/event/ssac-ukulele-jam-sing-along/2026-03-26/"
   },
   "_feed": {
-    "sourceToken": "coastculture-scrape",
+    "sourceToken": "coastculture",
     "sourceAuthority": "verified_venue",
     "trustScore": 0.85,
     "targetGroups": [

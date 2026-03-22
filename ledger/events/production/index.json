@@ -1,75 +1,23 @@
 {
   "generatedAt": "2026-03-22T00:00:00Z",
-  "count": 8,
+  "count": 10,
   "events": [
-    "evt_sample_001",
-    "evt_sample_002",
-    "evt_sample_003",
-    "evt_sample_004",
-    "evt_sample_005",
-    "evt_sample_006",
     "evt_sc_001",
-    "evt_sc_002"
+    "evt_sc_002",
+    "evt_sc_003",
+    "evt_sc_004",
+    "evt_sc_005",
+    "evt_sc_006",
+    "evt_sc_007",
+    "evt_sc_008",
+    "evt_sc_009",
+    "evt_sc_010"
   ],
   "summary": [
     {
-      "id": "evt_sample_001",
-      "name": "Brickers Cidery: Afternoon of the Music of John Prine",
-      "startDate": "2026-03-22T14:00:00-07:00",
-      "location": "Sechelt, BC",
-      "targetGroups": [
-        "sunshine-coast"
-      ]
-    },
-    {
-      "id": "evt_sample_002",
-      "name": "Madeira Park Legion: Sunday Afternoon Music – Magic Carpet Ride",
-      "startDate": "2026-03-22T14:00:00-07:00",
-      "location": "Madeira Park, BC",
-      "targetGroups": [
-        "sunshine-coast"
-      ]
-    },
-    {
-      "id": "evt_sample_003",
-      "name": "Persephone: Grant Olsen",
-      "startDate": "2026-03-22T15:00:00-07:00",
-      "location": "Gibsons, BC",
-      "targetGroups": [
-        "sunshine-coast"
-      ]
-    },
-    {
-      "id": "evt_sample_004",
-      "name": "GPAG: SHOUT OUT! Sunshine Coast Youth Art Exhibition",
-      "startDate": "2026-03-22T11:00:00-07:00",
-      "location": "Gibsons, BC",
-      "targetGroups": [
-        "sunshine-coast"
-      ]
-    },
-    {
-      "id": "evt_sample_005",
-      "name": "Ambassadress: Bazzar Bazzar",
-      "startDate": "2026-03-22T11:00:00-07:00",
-      "location": "Gibsons, BC",
-      "targetGroups": [
-        "sunshine-coast"
-      ]
-    },
-    {
-      "id": "evt_sample_006",
-      "name": "Sunnycrest Mall: Spring Market",
-      "startDate": "2026-03-22T10:00:00-07:00",
-      "location": "Gibsons, BC",
-      "targetGroups": [
-        "sunshine-coast"
-      ]
-    },
-    {
       "id": "evt_sc_001",
-      "name": "Art Exhibition: Gumboot Cafe – Clare Wilkening",
-      "startDate": "2026-03-22T08:00:00-07:00",
+      "name": "RC Legion: Open Mic And Jam",
+      "startDate": "2026-03-25 19:00:00",
       "location": "Roberts Creek, BC",
       "targetGroups": [
         "sunshine-coast"
@@ -77,9 +25,81 @@
     },
     {
       "id": "evt_sc_002",
-      "name": "Salt & Swine: Sewing Drop In",
-      "startDate": "2026-03-23T18:30:00-07:00",
+      "name": "SSAC: Ukulele Jam & Sing-Along",
+      "startDate": "2026-03-26 11:15:00",
+      "location": "Sechelt, BC",
+      "targetGroups": [
+        "sunshine-coast"
+      ]
+    },
+    {
+      "id": "evt_sc_003",
+      "name": "Gibsons Legion: The Eclectic Singers’ Circle",
+      "startDate": "2026-03-26 17:00:00",
       "location": "Gibsons, BC",
+      "targetGroups": [
+        "sunshine-coast"
+      ]
+    },
+    {
+      "id": "evt_sc_004",
+      "name": "Tapworks: Timbitz",
+      "startDate": "2026-03-26 19:00:00",
+      "location": "Gibsons, BC",
+      "targetGroups": [
+        "sunshine-coast"
+      ]
+    },
+    {
+      "id": "evt_sc_005",
+      "name": "RC Legion: Celtic Night – Two Thistles",
+      "startDate": "2026-03-26 19:00:00",
+      "location": "Roberts Creek, BC",
+      "targetGroups": [
+        "sunshine-coast"
+      ]
+    },
+    {
+      "id": "evt_sc_006",
+      "name": "Gibsons Legion: Bob Ross Painting Party",
+      "startDate": "2026-03-27 18:00:00",
+      "location": "Gibsons, BC",
+      "targetGroups": [
+        "sunshine-coast"
+      ]
+    },
+    {
+      "id": "evt_sc_007",
+      "name": "Persephone Brewing: Blue Western",
+      "startDate": "2026-03-27 18:00:00",
+      "location": "Gibsons, BC",
+      "targetGroups": [
+        "sunshine-coast"
+      ]
+    },
+    {
+      "id": "evt_sc_008",
+      "name": "Gibsons Legion Hall: Beginner Line Dancing Lessons",
+      "startDate": "2026-03-27 18:00:00",
+      "location": "Gibsons, BC",
+      "targetGroups": [
+        "sunshine-coast"
+      ]
+    },
+    {
+      "id": "evt_sc_009",
+      "name": "Madeira Park Legion: Eddy Edrik",
+      "startDate": "2026-03-27 18:30:00",
+      "location": "Madeira Park, BC",
+      "targetGroups": [
+        "sunshine-coast"
+      ]
+    },
+    {
+      "id": "evt_sc_010",
+      "name": "St Hilda’s Church: Bach & Friends",
+      "startDate": "2026-03-27 19:00:00",
+      "location": "Sechelt, BC",
       "targetGroups": [
         "sunshine-coast"
       ]

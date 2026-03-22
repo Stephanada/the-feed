@@ -1,0 +1,51 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "@id": "evt_sc_010",
+  "name": "St Hilda’s Church: Bach & Friends",
+  "description": "The Coast Messiah Choir and Orchestra present a Baroque concert with a tribute Bach’s masterworks. Featuring Simon Gidora, Isabella Perron, plus Miyo Shinagawa, Erik Kallo and more.",
+  "startDate": "2026-03-27 19:00:00",
+  "endDate": "2026-03-27 21:00:00",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "url": "https://coastculture.com/event/st-hildas-church-bach-friends/",
+  "image": "https://coastculture.com/wp-content/uploads/2026/03/Bach-Mar-28-2.jpeg",
+  "location": {
+    "@type": "Place",
+    "name": "St Hilda’s Anglican Church",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "5838 Barnacle",
+      "addressLocality": "Sechelt",
+      "addressRegion": "BC",
+      "postalCode": "V0N 3A3",
+      "addressCountry": "CA"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 49.4718114,
+      "longitude": -123.7656181
+    }
+  },
+  "organizer": {
+    "@type": "Organization",
+    "name": "St Hilda’s Anglican Church"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "30",
+    "priceCurrency": "CAD",
+    "availability": "https://schema.org/InStock",
+    "url": "https://coastculture.com/event/st-hildas-church-bach-friends/"
+  },
+  "_feed": {
+    "sourceToken": "coastculture",
+    "sourceAuthority": "verified_venue",
+    "trustScore": 0.85,
+    "targetGroups": [
+      "sunshine-coast"
+    ],
+    "scope": "local",
+    "submittedAt": "2026-03-22T00:00:00Z"
+  }
+}

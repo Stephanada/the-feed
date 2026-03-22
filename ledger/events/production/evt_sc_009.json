@@ -1,19 +1,18 @@
 {
   "@context": "https://schema.org",
   "@type": "Event",
-  "@id": "evt_sample_002",
-  "name": "Madeira Park Legion: Sunday Afternoon Music – Magic Carpet Ride",
-  "description": "<p>with Al Alford, Peter Van Deursen, Tim Rannard. Everyone Welcome.</p>",
-  "startDate": "2026-03-22T14:00:00-07:00",
-  "endDate": "2026-03-22T17:00:00-07:00",
+  "@id": "evt_sc_009",
+  "name": "Madeira Park Legion: Eddy Edrik",
+  "description": "Fridays, vocals, guitar live with Eddy.",
+  "startDate": "2026-03-27 18:30:00",
+  "endDate": "2026-03-27 18:30:00",
   "eventStatus": "https://schema.org/EventScheduled",
   "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-  "url": "https://coastculture.com/event/madeira-park-legion-sunday-afternoon-music-magic-carpet-ride/",
-  "image": "https://coastculture.com/wp-content/uploads/2024/11/Magic-Carpet-Mar-22.jpg",
+  "url": "https://coastculture.com/event/madeira-park-legion-eddy-edrik/2026-03-27/",
+  "image": "https://coastculture.com/wp-content/uploads/2025/05/Eddy-Edrik-2026.jpg",
   "location": {
     "@type": "Place",
     "name": "Madeira Park Legion",
-    "url": "https://www.facebook.com/people/Royal-Canadian-Legion-Branch-112-Madeira-Park-BC-Canada/100063861649659/",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "12829 Lillies Lake Rd",
@@ -22,12 +21,12 @@
       "postalCode": "V0N2H0",
       "addressCountry": "CA"
     },
+    "telephone": "604.883.2235",
     "geo": {
       "@type": "GeoCoordinates",
       "latitude": 49.6178159,
       "longitude": -124.0245176
-    },
-    "telephone": "604.883.2235"
+    }
   },
   "organizer": {
     "@type": "Organization",
@@ -35,13 +34,13 @@
   },
   "offers": {
     "@type": "Offer",
-    "price": "10",
+    "price": "0",
     "priceCurrency": "CAD",
     "availability": "https://schema.org/InStock",
-    "url": "https://coastculture.com/event/madeira-park-legion-sunday-afternoon-music-magic-carpet-ride/"
+    "url": "https://coastculture.com/event/madeira-park-legion-eddy-edrik/2026-03-27/"
   },
   "_feed": {
-    "sourceToken": "coastculture-scrape",
+    "sourceToken": "coastculture",
     "sourceAuthority": "verified_venue",
     "trustScore": 0.85,
     "targetGroups": [
