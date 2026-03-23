@@ -4,9 +4,9 @@
 
 The Feed is a headless, open event syndication protocol for performers, promoters, and venues. No platform lock-in. One structured submission, distributed across every site that subscribes to the feed.
 
-**Live:** [the-feed-ui.pages.dev](https://the-feed-ui.pages.dev) · [the-feed-api.stephan-99b.workers.dev](https://the-feed-api.stephan-99b.workers.dev/api/health)  
+**Live:** [thefeed.site](https://thefeed.site) · [API](https://the-feed-api.stephan-99b.workers.dev/api/health)  
 **Repo:** Public — MIT License  
-**Status:** Production (March 2026)
+**Status:** Production — first real use case live (Sunshine Coast, BC — March 2026)
 
 ---
 

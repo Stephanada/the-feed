@@ -1,6 +1,6 @@
 # THE FEED — Developer Handoff
-**Updated:** March 11, 2026  
-**Milestone:** Live — public landing page, all three workers deployed, embed system working  
+**Updated:** March 22, 2026  
+**Milestone:** First real use case live — Sunshine Coast events, live marquee, CI/CD auto-deploy  
 **Repository:** https://github.com/Stephanada/the-feed (public, MIT)
 
 ---
@@ -17,11 +17,11 @@
 
 | Service | URL | Status |
 |---|---|---|
-| Landing page | https://the-feed-ui.pages.dev | ✅ Live |
+| Landing page | https://thefeed.site | ✅ Live (custom domain) |
+| Pages (alias) | https://the-feed-ui.pages.dev | ✅ Live |
 | API Worker | https://the-feed-api.stephan-99b.workers.dev | ✅ Live |
 | Ingest Worker | https://the-feed-ingest.stephan-99b.workers.dev | ✅ Live |
 | NLP Worker | https://the-feed-nlp.stephan-99b.workers.dev | ✅ Live |
-| Custom domain | https://thefeed.site | ⏳ DNS propagating (Dreamhost → Cloudflare) |
 
 **Cloudflare account:** `stephan-99b`  
 **Pages project:** `the-feed-ui`  
@@ -80,7 +80,7 @@ The Feed/
 ├── pages.toml                               ← Cloudflare Pages config
 │
 ├── config/
-│   └── rules.json                           ← Hub & Spoke routing rules (6 hubs)
+│   └── rules.json                           ← Hub & Spoke routing rules (8 hubs)
 │
 ├── docs/
 │   ├── ARCHITECTURE.md
@@ -92,10 +92,17 @@ The Feed/
 │   ├── event.example.json
 │   └── events/
 │       ├── production/
-│       │   ├── index.json                   ← { count: 3, events: [...] }
-│       │   ├── evt_sample_001.json          ← "The Feed — Demo Night" Apr 12 2026
-│       │   ├── evt_sample_002.json          ← "Jazz at the Venue" Apr 18 2026
-│       │   └── evt_sample_003.json          ← "Electronic Night" Apr 25 2026
+│       │   ├── index.json                   ← { count: 10, events: [...] }
+│       │   ├── evt_sc_001.json              ← RC Legion: Open Mic And Jam (Roberts Creek, Mar 25)
+│       │   ├── evt_sc_002.json              ← SSAC: Ukulele Jam & Sing-Along (Sechelt, Mar 26)
+│       │   ├── evt_sc_003.json              ← Gibsons Legion: Eclectic Singers' Circle (Mar 26)
+│       │   ├── evt_sc_004.json              ← Tapworks: Timbitz (Gibsons, Mar 26)
+│       │   ├── evt_sc_005.json              ← RC Legion: Celtic Night – Two Thistles (Mar 26)
+│       │   ├── evt_sc_006.json              ← Gibsons Legion: Bob Ross Painting Party (Mar 27)
+│       │   ├── evt_sc_007.json              ← Persephone Brewing: Blue Western (Gibsons, Mar 27)
+│       │   ├── evt_sc_008.json              ← Gibsons Legion: Beginner Line Dancing (Mar 27)
+│       │   ├── evt_sc_009.json              ← Madeira Park Legion: Eddy Edrik (Mar 27)
+│       │   └── evt_sc_010.json              ← St Hilda's Church: Bach & Friends (Sechelt, Mar 27)
 │       └── staging/
 │           └── .gitkeep
 │
@@ -119,7 +126,7 @@ The Feed/
 │       └── wrangler.toml
 │
 ├── ui/
-│   ├── index.html                           ← Landing page (the-feed-ui.pages.dev)
+│   ├── index.html                           ← Landing page (thefeed.site) — live marquee hero
 │   ├── embed.html                           ← Hosted iframe shim for no-code builders
 │   ├── feed-icon.svg                        ← Logomark / favicon / og:image
 │   ├── the-feed-ingest.js                   ← <the-feed-ingest> component
@@ -135,11 +142,9 @@ The Feed/
 │       ├── shortcode-builder.php
 │       └── nlp-tool.php
 │
-└── github-actions/
-    └── .github/workflows/
-        ├── validate-and-merge.yml
-        ├── scraper-cron.yml
-        └── deploy.yml
+└── .github/
+    └── workflows/
+        └── deploy-pages.yml                 ← Auto-deploy UI on push to main (active)
 ```
 
 ---
@@ -151,9 +156,16 @@ The Feed/
 | Worker | Secret | Status |
 |---|---|---|
 | `the-feed-api` | `GITHUB_TOKEN` | ✅ Set |
+| `the-feed-api` | `CACHE_VERSION` | ✅ Set (`4`) — bump to bust edge cache |
 | `the-feed-ingest` | `GITHUB_TOKEN` | ✅ Set |
 | `the-feed-ingest` | `DEFAULT_OPENAI_KEY` | ✅ Set |
 | `the-feed-ingest` | `ADMIN_SECRET` | ✅ Set (`8c7c4cbb...`) |
+
+**Cache busting:** The API worker uses `?v=${CACHE_VERSION}` as the cache key suffix for all GitHub raw fetches. To force all edge nodes to re-fetch from GitHub after a ledger update:
+```bash
+echo "5" | npx wrangler secret put CACHE_VERSION --cwd workers/api
+cd workers/api && npx wrangler deploy
+```
 
 ### wrangler.toml vars (both workers)
 
@@ -170,8 +182,17 @@ ALLOWED_ORIGINS          = "*"
 | Secret | Status |
 |---|---|
 | `CLOUDFLARE_API_TOKEN` | ✅ Set |
-| `CLOUDFLARE_ACCOUNT_ID` | ✅ Set |
+| `CF_ACCOUNT_ID` | ✅ Set (`99b098b59733ba9dfc7068871a2cd8bb`) |
 | `OPENAI_API_KEY` | ✅ Set |
+
+### CI/CD
+
+`.github/workflows/deploy-pages.yml` — triggers on push to `main` when `ui/**` changes:
+1. `npm ci`
+2. `npm run build:ui` (copies `ui/` → `dist/`)
+3. `wrangler pages deploy ./dist --project-name=the-feed-ui`
+
+**No manual deploy needed for UI changes** — just `git push`.
 
 ---
 
@@ -236,13 +257,19 @@ https://cdn.jsdelivr.net/gh/Stephanada/the-feed@main/ui/the-feed-event.js
 
 ## 9. Embed Shim
 
-`https://the-feed-ui.pages.dev/embed.html` — hosted page that loads the right component from URL params. Use inside `<iframe>` for no-code builders.
+`https://thefeed.site/embed.html` — hosted page that loads the right component from URL params. Use inside `<iframe>` for no-code builders.
 
 ```html
 <iframe
-  src="https://the-feed-ui.pages.dev/embed.html?mode=calendar&skin=default&view=mosaic"
+  src="https://thefeed.site/embed.html?mode=calendar&group=sunshine-coast&skin=default&view=mosaic"
   width="100%" height="600" style="border:none;border-radius:12px;" loading="lazy">
 </iframe>
+```
+
+**Group-filtered embeds (ready to use):**
+```
+https://thefeed.site/embed.html?mode=calendar&group=sunshine-coast
+https://thefeed.site/embed.html?mode=calendar&group=nanaimo
 ```
 
 ---
@@ -269,20 +296,27 @@ Register tokens via `/admin/tokens` (requires `ADMIN_SECRET`) or at deploy-time 
 ✅  GITHUB_TOKEN set on api + ingest workers
 ✅  DEFAULT_OPENAI_KEY set on ingest worker
 ✅  ADMIN_SECRET set on ingest worker
-✅  CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID in GitHub Actions
-✅  3 sample events seeded in ledger/events/production/
+✅  CACHE_VERSION secret on api worker (value: 4)
 ✅  CORS open (*) on both workers
-✅  Landing page live at the-feed-ui.pages.dev
+✅  Landing page live at thefeed.site (custom domain)
+✅  thefeed.site DNS live (Cloudflare nameservers)
 ✅  Repo public (enables jsDelivr CDN)
-✅  CORS works from any origin including *.the-feed-ui.pages.dev preview deploys
+✅  GitHub Actions deploy-pages.yml wired — git push auto-deploys UI
+✅  10 real Sunshine Coast events in production ledger (coastculture.com source)
+✅  Nanaimo + Sunshine Coast hubs in config/rules.json (8 hubs total)
+✅  Live scrolling marquee on landing page hero (pulls from API)
+✅  Group filtering working: ?group=sunshine-coast, ?group=nanaimo
+✅  Upcoming filter uses endDate — same-day events stay visible until they end
 
-⏳  thefeed.site DNS propagating (Dreamhost → Cloudflare nameservers)
-⬜  Add thefeed.site as custom domain in CF Pages (after DNS resolves)
+⬜  Add thefeed.site as custom domain in CF Pages dashboard
+      Workers & Pages → the-feed-ui → Custom domains → Add domain
 ⬜  KV namespace for live token storage:
       wrangler kv:namespace create SOURCE_TOKENS_KV
       → paste namespace ID into workers/ingest/wrangler.toml → redeploy
-⬜  Register real station tokens via /admin/tokens
-⬜  Replace sample events with real production data
+⬜  Register real station/venue tokens via /admin/tokens
+⬜  Nanaimo events — nanaimonewsnow.com has data; need scraper script
+      (unbrowse discovered endpoint: /more/eventGrid?id=all,12227,29049&...)
+⬜  GitHub Action: nightly coastculture scraper cron (auto-refresh ledger)
 ⬜  Gutenberg block (stub registered, blocks/ dir not yet created)
 ⬜  workers/syndication/ — push syndication via WebSub/webhooks (reserved)
 ```
@@ -317,4 +351,4 @@ Same show from 10 sources = 1 record. `commitToLedger()` checks for existing `ev
 
 ---
 
-*Updated March 11, 2026. See `git log` for per-change attribution.*
+*Updated March 22, 2026. See `git log` for per-change attribution.*
