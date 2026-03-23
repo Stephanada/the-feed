@@ -219,6 +219,165 @@
     }
     .btn-ghost:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.15); text-decoration: none; transform: translateY(-1px); }
 
+    /* ── Live marquee stripe ──────────────────────────────── */
+    .marquee-stripe {
+      position: relative;
+      width: 100%;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 0;
+      overflow: hidden;
+      margin-top: 4rem;
+    }
+    /* left/right edge fade masks */
+    .marquee-stripe::before,
+    .marquee-stripe::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 120px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .marquee-stripe::before {
+      left: 0;
+      background: linear-gradient(to right, var(--surface) 0%, transparent 100%);
+    }
+    .marquee-stripe::after {
+      right: 0;
+      background: linear-gradient(to left, var(--surface) 0%, transparent 100%);
+    }
+    .marquee-header {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      padding: 0 1.25rem 0 1.5rem;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .marquee-header-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-dot 1.6s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.7); }
+    }
+    .marquee-header-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .marquee-track-wrap {
+      overflow: hidden;
+      padding-left: 160px; /* room for header label */
+    }
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marquee-scroll 55s linear infinite;
+      will-change: transform;
+    }
+    .marquee-track:hover { animation-play-state: paused; }
+    @keyframes marquee-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    .marquee-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 2.5rem;
+      height: 52px;
+      cursor: default;
+      flex-shrink: 0;
+      transition: background 0.15s;
+      border-right: 1px solid var(--border);
+    }
+    .marquee-item:hover {
+      background: rgba(255,255,255,0.03);
+    }
+    .marquee-item a {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .marquee-item a:hover { text-decoration: none; }
+    .marquee-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      opacity: 0.6;
+    }
+    .marquee-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .marquee-meta {
+      font-size: 0.72rem;
+      color: var(--text-mid);
+      white-space: nowrap;
+      font-family: var(--mono);
+    }
+    .marquee-sep {
+      color: var(--text-dim);
+      font-size: 0.7rem;
+      padding: 0 0.25rem;
+    }
+    .marquee-price {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .marquee-price.free {
+      background: rgba(0,180,216,0.1);
+      color: var(--cyan);
+    }
+    /* skeleton items shown while loading */
+    .marquee-skel {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 2.5rem;
+      height: 52px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border);
+    }
+    .skel-bar {
+      height: 10px;
+      border-radius: 5px;
+      background: rgba(255,255,255,0.06);
+      animation: skel-pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes skel-pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
     /* ── Section chrome ───────────────────────────────────── */
     section { padding: 5rem 0; }
     section + section { border-top: 1px solid var(--border); }
@@ -655,6 +814,25 @@
     </div>
   </div>
 </section>
+
+<!-- ════════════════════════ LIVE MARQUEE ════════════════════════ -->
+<div class="marquee-stripe" id="live-marquee" aria-label="Live events ticker" role="marquee">
+  <div class="marquee-header">
+    <span class="marquee-header-dot" aria-hidden="true"></span>
+    <span class="marquee-header-label">Live</span>
+  </div>
+  <div class="marquee-track-wrap">
+    <div class="marquee-track" id="marquee-track">
+      <!-- skeletons while loading -->
+      <div class="marquee-skel"><div class="skel-bar" style="width:160px"></div><div class="skel-bar" style="width:80px"></div></div>
+      <div class="marquee-skel"><div class="skel-bar" style="width:130px"></div><div class="skel-bar" style="width:70px"></div></div>
+      <div class="marquee-skel"><div class="skel-bar" style="width:180px"></div><div class="skel-bar" style="width:90px"></div></div>
+      <div class="marquee-skel"><div class="skel-bar" style="width:140px"></div><div class="skel-bar" style="width:75px"></div></div>
+      <div class="marquee-skel"><div class="skel-bar" style="width:170px"></div><div class="skel-bar" style="width:85px"></div></div>
+      <div class="marquee-skel"><div class="skel-bar" style="width:150px"></div><div class="skel-bar" style="width:80px"></div></div>
+    </div>
+  </div>
+</div>
 
 <!-- ════════════════════════ HOW IT WORKS ════════════════════════ -->
 <section id="how">
@@ -1196,6 +1374,83 @@ GET /api/feed.json?venue=The+Fillmore&amp;limit=20</span></pre>
       setTimeout(() => btn.textContent = orig, 2000);
     });
   }
+
+  // ── Live marquee ─────────────────────────────────────────
+  (async function initMarquee() {
+    const track = document.getElementById('marquee-track');
+    if (!track) return;
+
+    const API = 'https://the-feed-api.stephan-99b.workers.dev/api/events?limit=50&past=false';
+
+    let events = [];
+    try {
+      const res = await fetch(API);
+      const data = await res.json();
+      events = (data.itemListElement || []).map(el => el.item);
+    } catch (_) {}
+
+    if (!events.length) return; // keep skeletons on error
+
+    // Format date: "Wed Mar 26"
+    function fmtDate(iso) {
+      if (!iso) return '';
+      const d = new Date(iso);
+      return d.toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/Vancouver' });
+    }
+
+    // Format price
+    function fmtPrice(evt) {
+      const o = evt.offers;
+      if (!o) return null;
+      const p = parseFloat((Array.isArray(o) ? o[0] : o).price ?? '0');
+      return p === 0 ? 'Free' : `$${p % 1 === 0 ? p : p.toFixed(2)}`;
+    }
+
+    // Build one marquee item
+    function buildItem(evt) {
+      const name = evt.name || 'Event';
+      const venue = evt.location?.name || '';
+      const city  = evt.location?.address?.addressLocality || '';
+      const where = [venue, city].filter(Boolean).join(' · ');
+      const date  = fmtDate(evt.startDate);
+      const price = fmtPrice(evt);
+      const isFree = price === 'Free';
+      const url   = evt.url || '#';
+
+      const div = document.createElement('div');
+      div.className = 'marquee-item';
+
+      const inner = url !== '#'
+        ? `<a href="${url}" target="_blank" rel="noopener">`
+        : `<span>`;
+      const close = url !== '#' ? `</a>` : `</span>`;
+
+      div.innerHTML = `
+        ${inner}
+          <span class="marquee-dot" aria-hidden="true"></span>
+          <span class="marquee-name" title="${name}">${name}</span>
+          ${where ? `<span class="marquee-meta">${where}</span>` : ''}
+          ${date  ? `<span class="marquee-sep" aria-hidden="true">·</span><span class="marquee-meta">${date}</span>` : ''}
+          ${price ? `<span class="marquee-price${isFree ? ' free' : ''}">${price}</span>` : ''}
+        ${close}`;
+      return div;
+    }
+
+    // Clear skeletons, build items × 2 for seamless loop
+    track.innerHTML = '';
+    const frag1 = document.createDocumentFragment();
+    const frag2 = document.createDocumentFragment();
+    events.forEach(evt => {
+      frag1.appendChild(buildItem(evt));
+      frag2.appendChild(buildItem(evt));
+    });
+    track.appendChild(frag1);
+    track.appendChild(frag2);
+
+    // Adjust animation duration based on item count (roughly 5s per item)
+    const dur = Math.max(30, events.length * 5);
+    track.style.animationDuration = dur + 's';
+  })();
 </script>
 
 </body>
