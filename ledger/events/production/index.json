@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-03-22T00:00:00Z",
-  "count": 10,
+  "count": 11,
   "events": [
     "evt_sc_001",
     "evt_sc_002",
@@ -11,7 +11,8 @@
     "evt_sc_007",
     "evt_sc_008",
     "evt_sc_009",
-    "evt_sc_010"
+    "evt_sc_010",
+    "evt_sc_011"
   ],
   "summary": [
     {
@@ -97,8 +98,17 @@
     },
     {
       "id": "evt_sc_010",
-      "name": "St Hilda’s Church: Bach & Friends",
+      "name": "St Hilda's Church: Bach & Friends",
       "startDate": "2026-03-27 19:00:00",
+      "location": "Sechelt, BC",
+      "targetGroups": [
+        "sunshine-coast"
+      ]
+    },
+    {
+      "id": "evt_sc_011",
+      "name": "Stephan LaCasse at Sechelt Legion",
+      "startDate": "2026-03-26T15:00:00-07:00",
       "location": "Sechelt, BC",
       "targetGroups": [
         "sunshine-coast"

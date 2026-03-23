@@ -1,0 +1,56 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "@id": "evt_sc_011",
+  "name": "Stephan LaCasse at Sechelt Legion",
+  "description": "Local singer-strummer, Stephan LaCasse, will be performing happy hour at the Sechelt Legion 3-6pm Thursday. Always a great time with specials, smiles and warm vibes.",
+  "startDate": "2026-03-26T15:00:00-07:00",
+  "endDate": "2026-03-26T18:00:00-07:00",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "url": "https://coastculture.com/event/stephan-lacasse-at-sechelt-legion/2026-03-26/",
+  "image": "https://coastculture.com/wp-content/uploads/2023/04/stephen-lacasse-pic-only.jpg",
+  "location": {
+    "@type": "Place",
+    "name": "Sechelt Legion",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "5546 Inlet Ave",
+      "addressLocality": "Sechelt",
+      "addressRegion": "BC",
+      "postalCode": "V0N 3A0",
+      "addressCountry": "CA"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 49.4752123,
+      "longitude": -123.7549233
+    }
+  },
+  "organizer": {
+    "@type": "Organization",
+    "name": "Sechelt Legion",
+    "url": "https://140legionbargrill.ca/"
+  },
+  "performer": {
+    "@type": "Person",
+    "name": "Stephan LaCasse"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "CAD",
+    "availability": "https://schema.org/InStock",
+    "url": "https://coastculture.com/event/stephan-lacasse-at-sechelt-legion/2026-03-26/"
+  },
+  "_feed": {
+    "sourceToken": "coastculture",
+    "sourceAuthority": "verified_venue",
+    "trustScore": 0.85,
+    "targetGroups": [
+      "sunshine-coast"
+    ],
+    "scope": "local",
+    "submittedAt": "2026-03-22T00:00:00Z"
+  }
+}
